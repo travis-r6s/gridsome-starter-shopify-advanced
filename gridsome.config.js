@@ -14,6 +14,12 @@ module.exports = {
         path: '/collection/:handle',
         component: './src/templates/Collection.vue'
       }
+    ],
+    ShopifyPage: [
+      {
+        path: '/:handle',
+        component: './src/templates/Page.vue'
+      }
     ]
   },
   plugins: [
