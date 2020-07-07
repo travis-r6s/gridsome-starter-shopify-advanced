@@ -15,7 +15,6 @@
     "currency.js": "^1.2.2",
     "graphql-tag": "^2.10.3",
     "gridsome": "^0.7.18",
-    "gridsome-plugin-brotli": "^0.1.3",
     "gridsome-plugin-flexsearch": "^1.0.1",
     "gridsome-plugin-guess-js": "^0.1.1",
     "gridsome-plugin-manifest": "^0.3.5",

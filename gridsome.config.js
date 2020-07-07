@@ -80,16 +80,6 @@ module.exports = {
         id: process.env.GRIDSOME_ANALYTICS_ID
       }
     },
-    // {
-    //   use: 'gridsome-plugin-guess-js',
-    //   options: {
-    //     viewId: process.env.GUESS_ANALYTICS_VIEW,
-    //     jwt: {
-    //       clientEmail: process.env.GUESS_ANALYTICS_EMAIL,
-    //       privateKey: process.env.GUESS_ANALYTICS_KEY
-    //     }
-    //   }
-    // },
     {
       use: 'gridsome-plugin-manifest',
       options: {
@@ -113,12 +103,6 @@ module.exports = {
           cacheName: 'static-resources',
           routes: [/\.(?:js|css)$/]
         }
-      }
-    },
-    {
-      use: 'gridsome-plugin-brotli',
-      options: {
-        extensions: ['css', 'html', 'js', 'svg', 'json', 'xml']
       }
     }
   ]
