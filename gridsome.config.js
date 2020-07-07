@@ -100,14 +100,9 @@ module.exports = {
     {
       use: 'gridsome-plugin-service-worker',
       options: {
-        precachedRoutes: ['/', '/collections', '/login'],
-        cacheFirst: {
-          cacheName: 'images',
-          routes: [/\.(?:png|gif|jpg|jpeg|webp|svg)$/]
-        },
         staleWhileRevalidate: {
           cacheName: 'static-resources',
-          routes: [/\.(?:js|css)$/]
+          routes: [/\.(?:css)$/]
         }
       }
     }
