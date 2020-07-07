@@ -1,112 +1,40 @@
 <template>
   <Layout>
-    <div class="container has-text-centered">
-      <h3 class="title is-family-secondary">
-        Login
-      </h3>
-      <div class="columns is-centered">
-        <div class="column is-4">
-          <form
-            class="form"
-            @submit.prevent="login">
-            <div class="field">
-              <div class="control">
-                <label
-                  class="label"
-                  for="email">Email
-                  <input
-                    id="email"
-                    v-model.trim="user.email"
-                    class="input"
-                    type="email"
-                    placeholder="Your Email"
-                    value="jane@does.com"
-                    required>
-                </label>
-              </div>
-            </div>
-            <div class="field">
-              <div class="control">
-                <label
-                  class="label"
-                  for="password">Password
-                  <input
-                    id="password"
-                    v-model.trim="user.password"
-                    class="input"
-                    type="password"
-                    placeholder="***********"
-                    required>
-                </label>
-              </div>
-            </div>
-            <div class="field is-grouped is-grouped-right">
-              <div class="control">
-                <button
-                  :class="{'is-loading': isLoading}"
-                  class="button is-primary"
-                  type="submit">
-                  Login
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <notifications
+      group="auth"
+      position="top center" />
+    <transition-group name="fade">
+      <LoginForm
+        v-if="form ==='login'"
+        key="login"
+        @change="form = $event" />
+      <RegisterForm
+        v-if="form ==='register'"
+        key="register"
+        @change="form = $event" />
+    </transition-group>
   </Layout>
 </template>
 
 <script>
-// Packages
-import gql from 'graphql-tag'
+// Components
+import LoginForm from '@/components/Login/Login'
+import RegisterForm from '@/components/Login/Register'
 
 export default {
   name: 'Login',
+  components: { LoginForm, RegisterForm },
   data: () => ({
-    isLoading: false,
-    user: {
-      email: '',
-      password: ''
-    }
-  }),
-  methods: {
-    async login () {
-      const user = this.user
-      this.isLoading = true
-      try {
-        const { data: { customerAccessTokenCreate } } = await this.$apollo.mutate({
-          mutation: gql`mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
-            customerAccessTokenCreate(input: $input) {
-              customerAccessToken {
-                accessToken
-                expiresAt
-              }
-              customerUserErrors {
-                code
-                field
-                message
-              }
-            }
-          }`,
-          variables: { input: user }
-        })
-        const { customerAccessToken, customerUserErrors } = customerAccessTokenCreate
-        if (customerUserErrors.length) {
-          const [firstError] = customerUserErrors
-          throw new Error(firstError.message)
-        }
-        await this.$store.dispatch('login', customerAccessToken)
-        this.$router.push('/account')
-      } catch (error) {
-        this.isLoading = false
-        console.error(error)
-        this.$notify({
-          title: error.message,
-          type: 'error'
-        })
-      }
-    }
-  }
+    form: 'login'
+  })
 }
 </script>
+
+<style lang="scss" scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+</style>
