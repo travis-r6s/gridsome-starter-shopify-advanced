@@ -1,13 +1,13 @@
 <template>
   <div class="container has-text-centered">
     <h3 class="title is-family-secondary">
-      Login
+      Reset Password
     </h3>
     <div class="columns is-centered">
       <div class="column is-4">
         <form
           class="form"
-          @submit.prevent="login">
+          @submit.prevent="reset">
           <div class="field">
             <div class="control">
               <label
@@ -15,26 +15,11 @@
                 for="email">Email
                 <input
                   id="email"
-                  v-model.trim="user.email"
+                  v-model.trim="email"
                   class="input"
                   type="email"
                   placeholder="Your Email"
                   value="jane@does.com"
-                  required>
-              </label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label
-                class="label"
-                for="password">Password
-                <input
-                  id="password"
-                  v-model.trim="user.password"
-                  class="input"
-                  type="password"
-                  placeholder="***********"
                   required>
               </label>
             </div>
@@ -44,9 +29,9 @@
               <button
                 class="button is-white"
                 type="submit"
-                @click.prevent="$emit('change', 'register')"
-                @keyup.prevent="$emit('change', 'register')">
-                Register
+                @click.prevent="$emit('change', 'login')"
+                @keyup.prevent="$emit('change', 'login')">
+                Back to Login
               </button>
             </div>
             <div
@@ -56,18 +41,9 @@
                 :class="{'is-loading': isLoading}"
                 class="button is-primary"
                 type="submit">
-                Login
+                Reset Password
               </button>
             </div>
-          </div>
-          <div class="buttons is-right">
-            <button
-              class="button is-text"
-              type="submit"
-              @click.prevent="$emit('change', 'reset')"
-              @keyup.prevent="$emit('change', 'reset')">
-              Forgotten Password?
-            </button>
           </div>
         </form>
       </div>
@@ -80,26 +56,19 @@
 import gql from 'graphql-tag'
 
 export default {
-  name: 'Login',
+  name: 'Register',
   data: () => ({
     isLoading: false,
-    user: {
-      email: '',
-      password: ''
-    }
+    email: ''
   }),
   methods: {
-    async login () {
-      const user = this.user
+    async reset () {
+      const email = this.email
       this.isLoading = true
       try {
-        const { data: { customerAccessTokenCreate } } = await this.$apollo.mutate({
-          mutation: gql`mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
-            customerAccessTokenCreate(input: $input) {
-              customerAccessToken {
-                accessToken
-                expiresAt
-              }
+        const { data: { customerRecover } } = await this.$apollo.mutate({
+          mutation: gql`mutation customerRecover($email: String!) {
+            customerRecover(email: $email) {
               customerUserErrors {
                 code
                 field
@@ -107,15 +76,21 @@ export default {
               }
             }
           }`,
-          variables: { input: user }
+          variables: { email }
         })
-        const { customerAccessToken, customerUserErrors } = customerAccessTokenCreate
+        const { customerUserErrors } = customerRecover
         if (customerUserErrors.length) {
           const [firstError] = customerUserErrors
           throw new Error(firstError.message)
         }
-        await this.$store.dispatch('login', customerAccessToken)
-        this.$router.push('/account')
+
+        this.$notify({
+          group: 'auth',
+          title: `On its way...`,
+          text: 'Please check your inbox, and follow the instructions in the email to reset your password.',
+          type: 'success'
+        })
+        this.$emit('change', 'login')
       } catch (error) {
         this.isLoading = false
         console.error(error)

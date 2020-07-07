@@ -106,6 +106,15 @@
               </button>
             </div>
           </div>
+          <div class="buttons is-right">
+            <button
+              class="button is-text"
+              type="submit"
+              @click.prevent="$emit('change', 'reset')"
+              @keyup.prevent="$emit('change', 'reset')">
+              Forgotten Password?
+            </button>
+          </div>
         </form>
       </div>
     </div>

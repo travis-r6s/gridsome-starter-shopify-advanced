@@ -12,6 +12,10 @@
         v-if="form ==='register'"
         key="register"
         @change="form = $event" />
+      <ResetForm
+        v-if="form ==='reset'"
+        key="reset"
+        @change="form = $event" />
     </transition-group>
   </Layout>
 </template>
@@ -20,10 +24,11 @@
 // Components
 import LoginForm from '@/components/Login/Login'
 import RegisterForm from '@/components/Login/Register'
+import ResetForm from '@/components/Login/Reset'
 
 export default {
   name: 'Login',
-  components: { LoginForm, RegisterForm },
+  components: { LoginForm, RegisterForm, ResetForm },
   data: () => ({
     form: 'login'
   })
