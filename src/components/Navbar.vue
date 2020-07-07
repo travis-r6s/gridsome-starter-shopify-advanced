@@ -41,12 +41,12 @@
           Collections
         </g-link>
         <g-link
-          to="/"
+          to="/contact-us"
           class="navbar-item">
           Contact
         </g-link>
         <g-link
-          to="/"
+          to="/about-us"
           class="navbar-item">
           About
         </g-link>
