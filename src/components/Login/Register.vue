@@ -157,7 +157,7 @@ export default {
         this.$notify({
           group: 'auth',
           title: `Welcome, ${customer.firstName}!`,
-          text: 'Tahnk you for creating an account - please login.',
+          text: 'Thank you for creating an account - please login.',
           type: 'success'
         })
         this.$emit('change', 'login')
