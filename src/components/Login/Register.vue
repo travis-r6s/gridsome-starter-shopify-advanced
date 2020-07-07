@@ -81,7 +81,7 @@
                 <input
                   v-model="user.acceptsMarketing"
                   type="checkbox">
-                Do you want to receive our updates?
+                Please please please let us email you...?
               </label>
             </div>
           </div>
