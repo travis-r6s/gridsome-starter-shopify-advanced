@@ -1,7 +1,7 @@
 module.exports = {
   siteName: 'Gridsome + Shopify 😍',
   siteDescription: 'A full-featured Shopify starter kit for Gridsome, including an account page.',
-  siteUrl: 'https://gridsome-starter-shopiyf.vercel.app',
+  siteUrl: 'https://gridsome-starter-shopify-account.vercel.app',
   templates: {
     ShopifyProduct: [
       {
