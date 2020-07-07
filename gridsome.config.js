@@ -1,7 +1,7 @@
 module.exports = {
   siteName: 'Gridsome + Shopify 😍',
-  siteDescription: 'A full-featured Shopify starter kit for Gridsome.',
-  siteUrl: 'https://gridsome-shopify-starter.netlify.com',
+  siteDescription: 'A full-featured Shopify starter kit for Gridsome, including an account page.',
+  siteUrl: 'https://gridsome-starter-shopiyf.vercel.app',
   templates: {
     ShopifyProduct: [
       {
@@ -92,7 +92,7 @@ module.exports = {
         background_color: '#000000',
         icon_path: './src/favicon.png',
         name: 'Gridsome + Shopify 😍',
-        short_name: 'Shopify Starter',
+        short_name: 'Shopify Starter + 🔐',
         theme_color: '#000000',
         lang: 'en'
       }

@@ -1,5 +1,5 @@
 {
-  "name": "gridsome-starter-shopify",
+  "name": "gridsome-starter-shopify-account",
   "private": true,
   "scripts": {
     "build": "gridsome build",
