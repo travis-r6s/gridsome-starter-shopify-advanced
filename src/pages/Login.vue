@@ -35,6 +35,7 @@
                     v-model.trim="user.password"
                     class="input"
                     type="password"
+                    placeholder="***********"
                     required>
                 </label>
               </div>
