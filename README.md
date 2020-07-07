@@ -1,8 +1,8 @@
 # Extended Shopify starter for Gridsome
 
-This is an extended starter, copied from the [boilerplate starter](https://github.com/thetre97/gridsome-starter-shopify), which includes customer login and account pages, as well as a persisted shopping cart. [View Demo](https://gridsome-starter-shopify-account.vercel.app)
+This is an extended starter, copied from the [boilerplate starter](https://github.com/thetre97/gridsome-starter-shopify), which includes customer login and account pages as well as a persisted shopping cart. [View Demo](https://gridsome-starter-shopify-account.vercel.app)
 
-> Give it a go, create an account - take this as written confirmation of the fact that I will _not_ harvest any personal data. Or, of course, you can just use a demo email and password 🤷🏻‍♂️.
+> Give it a go, create an account - take this as written confirmation of the fact that I will _not_ harvest any personal data. Or, of course, you can just use a dummy email and password 🤷🏻‍♂️.
 
 This starter uses a source plugin ([`gridsome-source-shopify`](https://gridsome.org/plugins/gridsome-source-shopify)) to pull data from Shopify's Storefront API, and load it into Gridsome's data store - which you can then use to create pages (note that this only runs at build time). Pages created in this starter include product pages, category pages, and CMS pages such as `/about-us`.
 
