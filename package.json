@@ -10,6 +10,7 @@
     "@gridsome/plugin-critical": "^0.2.0",
     "@gridsome/plugin-google-analytics": "^0.1.1",
     "@gridsome/plugin-sitemap": "^0.4.0",
+    "@storefront-ui/vue": "^0.8.1",
     "apollo-boost": "^0.4.9",
     "currency.js": "^2.0.3",
     "graphql-tag": "^2.11.0",

@@ -6,7 +6,6 @@ import DefaultLayout from '~/layouts/Default.vue'
 
 // Plugins
 import Notifications from 'vue-notification/dist/ssr.js'
-import { VLazyImagePlugin } from 'v-lazy-image'
 import VueApollo from 'vue-apollo'
 import createStore from './store'
 
@@ -15,9 +14,7 @@ import ApolloClient from 'apollo-boost'
 import fetch from 'isomorphic-fetch'
 
 // Styles
-import '~/styles/main.scss'
-import 'typeface-karla'
-import 'typeface-prata'
+import '@storefront-ui/vue/styles.scss'
 
 export default function (Vue, { appOptions, isClient, router }) {
   // Set default layout as a global component
@@ -25,13 +22,12 @@ export default function (Vue, { appOptions, isClient, router }) {
 
   // Import global plugins
   Vue.use(Notifications)
-  Vue.use(VLazyImagePlugin)
   Vue.use(VueApollo)
 
   // Create Apollo client
   const apolloClient = new ApolloClient({
     fetch,
-    uri: `https://${process.env.GRIDSOME_SHOPIFY_STOREFRONT}.myshopify.com/api/2020-04/graphql.json`,
+    uri: `https://${process.env.GRIDSOME_SHOPIFY_STOREFRONT}.myshopify.com/api/2020-10/graphql.json`,
     headers: {
       'X-Shopify-Storefront-Access-Token': process.env.GRIDSOME_SHOPIFY_STOREFRONT_TOKEN
     }
