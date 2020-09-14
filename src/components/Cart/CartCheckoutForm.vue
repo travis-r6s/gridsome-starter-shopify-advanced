@@ -42,12 +42,16 @@ export default {
   data: () => ({ email: '' }),
   async mounted () {
     if (this.$store.getters.isAuthenticated) {
-      const { data } = await this.$graphql.request({
-        query: CustomerDetailsQuery,
-        variables: { accessToken: this.$store.getters.accessToken }
-      })
-      if (data && data.customer) {
-        this.email = data.customer.email
+      try {
+        const { customer } = await this.$graphql.request({
+          query: CustomerDetailsQuery,
+          variables: { accessToken: this.$store.getters.accessToken }
+        })
+        if (customer) {
+          this.email = customer.email
+        }
+      } catch (error) {
+        console.log(error)
       }
     }
   },

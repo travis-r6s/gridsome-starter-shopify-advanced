@@ -57,14 +57,15 @@ export default {
       const checkoutInput = { email, lineItems }
 
       try {
-        const { data: { checkoutCreate } } = await this.$graphql.request(CheckoutCreateMutation, { input: checkoutInput })
+        const { checkoutCreate } = await this.$graphql.request(CheckoutCreateMutation, { input: checkoutInput })
+        const { checkout, checkoutUserErrors } = checkoutCreate
 
-        if (checkoutCreate.checkoutUserErrors.length) {
-          const [{ message }] = checkoutCreate.checkoutUserErrors
+        if (checkoutUserErrors.length) {
+          const [{ message }] = checkoutUserErrors
           throw new Error(message)
         }
 
-        window.location = checkoutCreate.checkout.webUrl
+        window.location = checkout.webUrl
       } catch (error) {
         console.error(error)
         this.isLoading = false

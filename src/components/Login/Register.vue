@@ -143,7 +143,7 @@ export default {
       this.isLoading = true
 
       try {
-        const { data: { customerCreate } } = await this.$graphql.request(RegisterMutation, { input: user })
+        const { customerCreate } = await this.$graphql.request(RegisterMutation, { input: user })
 
         const { customer, customerUserErrors } = customerCreate
         if (customerUserErrors.length) {

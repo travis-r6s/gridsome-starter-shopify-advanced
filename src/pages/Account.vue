@@ -40,9 +40,9 @@ export default {
   },
   async mounted () {
     const variables = { accessToken: this.$store.getters.accessToken }
-    const { data } = await this.$graphql.request(CustomerOrdersQuery, variables)
+    const { customer } = await this.$graphql.request(CustomerOrdersQuery, variables)
 
-    this.customer = data.customer
+    this.customer = customer
   }
 }
 </script>

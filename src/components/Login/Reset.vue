@@ -67,7 +67,7 @@ export default {
       this.isLoading = true
 
       try {
-        const { data: { customerRecover } } = await this.$graphql.request(ResetMutation, { email })
+        const { customerRecover } = await this.$graphql.request(ResetMutation, { email })
 
         const { customerUserErrors } = customerRecover
         if (customerUserErrors.length) {

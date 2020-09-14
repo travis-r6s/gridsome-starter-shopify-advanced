@@ -45,7 +45,7 @@
                 class="button is-white"
                 type="submit"
                 @click.prevent="$emit('change', 'register')"
-                @keyup.prevent="$emit('change', 'register')">
+                @keyup.enter.space.prevent="$emit('change', 'register')">
                 Register
               </button>
             </div>
@@ -65,7 +65,7 @@
               class="button is-text"
               type="submit"
               @click.prevent="$emit('change', 'reset')"
-              @keyup.prevent="$emit('change', 'reset')">
+              @keyup.enter.space.prevent="$emit('change', 'reset')">
               Forgotten Password?
             </button>
           </div>
@@ -94,9 +94,9 @@ export default {
       this.isLoading = true
 
       try {
-        const { data: { customerAccessTokenCreate } } = await this.$graphql.request(LoginMutation, { input: user })
-
+        const { customerAccessTokenCreate } = await this.$graphql.request(LoginMutation, { input: user })
         const { customerAccessToken, customerUserErrors } = customerAccessTokenCreate
+
         if (customerUserErrors.length) {
           const [{ message }] = customerUserErrors
           throw new Error(message)
