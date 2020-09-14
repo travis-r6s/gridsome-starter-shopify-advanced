@@ -32,8 +32,9 @@
           v-model="searchTerm"
           placeholder="Search for items" />
         <SfMegaMenu
-          :visible="searchTerm.length && searchResults.length"
+          :visible="!!searchTerm.length && !!searchResults.length"
           title="Search Results"
+          style="z-index: 10;"
           is-absolute>
           <SfMegaMenuColumn
             v-for="(chunk, i) in searchResults"
@@ -72,7 +73,7 @@ export default {
   computed: {
     metadata () { return this.$static.metadata },
     isAuthenticated () { return this.$store.getters.isAuthenticated },
-    cartItems () { return this.$store.state.cart.length },
+    cartItems () { return this.$store.state.cart.length.toString() },
     searchResults () {
       const searchTerm = this.searchTerm
       if (searchTerm.length < 1) return []
