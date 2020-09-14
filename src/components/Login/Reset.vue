@@ -30,7 +30,7 @@
                 class="button is-white"
                 type="submit"
                 @click.prevent="$emit('change', 'login')"
-                @keyup.prevent="$emit('change', 'login')">
+                @keyup.enter.space.prevent="$emit('change', 'login')">
                 Back to Login
               </button>
             </div>

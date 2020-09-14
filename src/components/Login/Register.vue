@@ -91,7 +91,7 @@
                 class="button is-white"
                 type="submit"
                 @click.prevent="$emit('change', 'login')"
-                @keyup.prevent="$emit('change', 'login')">
+                @keyup.enter.space.prevent="$emit('change', 'login')">
                 Login
               </button>
             </div>
@@ -111,7 +111,7 @@
               class="button is-text"
               type="submit"
               @click.prevent="$emit('change', 'reset')"
-              @keyup.prevent="$emit('change', 'reset')">
+              @keyup.enter.space.prevent="$emit('change', 'reset')">
               Forgotten Password?
             </button>
           </div>
