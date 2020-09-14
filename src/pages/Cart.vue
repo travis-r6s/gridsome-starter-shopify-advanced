@@ -32,8 +32,9 @@
 </template>
 
 <script>
-// Packages
-import gql from 'graphql-tag'
+// GraphQL
+import { CheckoutCreateMutation } from '@/graphql/checkout'
+
 // Components
 import CartItemsTable from '@/components/Cart/CartItemsTable'
 import CartCheckoutForm from '@/components/Cart/CartCheckoutForm'
@@ -50,34 +51,24 @@ export default {
   methods: {
     async checkout (email) {
       if (!this.cart.length) return alert('No items in cart')
-      const lineItems = this.cart.map(item => ({ quantity: item.qty, variantId: item.variantId }))
+      this.isLoading = true
 
+      const lineItems = this.cart.map(item => ({ quantity: item.qty, variantId: item.variantId }))
       const checkoutInput = { email, lineItems }
 
       try {
-        this.isLoading = true
-        const { data: { checkoutCreate } } = await this.$apollo.mutate({
-          mutation: gql`mutation checkoutCreate($input: CheckoutCreateInput!) {
-            checkoutCreate(input: $input) {
-              checkout {
-                id
-                webUrl
-              }
-              checkoutUserErrors {
-                code
-                field
-                message
-              }
-            }
-          }`,
-          variables: { input: checkoutInput }
-        })
-        if (checkoutCreate.checkoutUserErrors.length) throw new Error(checkoutCreate.checkoutUserErrors[ 0 ].message)
+        const { data: { checkoutCreate } } = await this.$graphql.request(CheckoutCreateMutation, { input: checkoutInput })
+
+        if (checkoutCreate.checkoutUserErrors.length) {
+          const [{ message }] = checkoutCreate.checkoutUserErrors
+          throw new Error(message)
+        }
 
         window.location = checkoutCreate.checkout.webUrl
       } catch (error) {
-        this.isLoading = false
         console.error(error)
+        this.isLoading = false
+
         this.$notify({
           title: 'Whoops...',
           type: 'danger',

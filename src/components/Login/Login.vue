@@ -76,8 +76,8 @@
 </template>
 
 <script>
-// Packages
-import gql from 'graphql-tag'
+// GraphQL
+import { LoginMutation } from '@/graphql/auth'
 
 export default {
   name: 'Login',
@@ -92,33 +92,22 @@ export default {
     async login () {
       const user = this.user
       this.isLoading = true
+
       try {
-        const { data: { customerAccessTokenCreate } } = await this.$apollo.mutate({
-          mutation: gql`mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
-            customerAccessTokenCreate(input: $input) {
-              customerAccessToken {
-                accessToken
-                expiresAt
-              }
-              customerUserErrors {
-                code
-                field
-                message
-              }
-            }
-          }`,
-          variables: { input: user }
-        })
+        const { data: { customerAccessTokenCreate } } = await this.$graphql.request(LoginMutation, { input: user })
+
         const { customerAccessToken, customerUserErrors } = customerAccessTokenCreate
         if (customerUserErrors.length) {
-          const [firstError] = customerUserErrors
-          throw new Error(firstError.message)
+          const [{ message }] = customerUserErrors
+          throw new Error(message)
         }
+
         await this.$store.dispatch('login', customerAccessToken)
         this.$router.push('/account')
       } catch (error) {
-        this.isLoading = false
         console.error(error)
+        this.isLoading = false
+
         this.$notify({
           group: 'auth',
           title: error.message,

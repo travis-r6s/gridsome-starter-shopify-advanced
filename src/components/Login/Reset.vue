@@ -52,11 +52,11 @@
 </template>
 
 <script>
-// Packages
-import gql from 'graphql-tag'
+// GraphQL
+import { ResetMutation } from '@/graphql/auth'
 
 export default {
-  name: 'Register',
+  name: 'Reset',
   data: () => ({
     isLoading: false,
     email: ''
@@ -65,23 +65,14 @@ export default {
     async reset () {
       const email = this.email
       this.isLoading = true
+
       try {
-        const { data: { customerRecover } } = await this.$apollo.mutate({
-          mutation: gql`mutation customerRecover($email: String!) {
-            customerRecover(email: $email) {
-              customerUserErrors {
-                code
-                field
-                message
-              }
-            }
-          }`,
-          variables: { email }
-        })
+        const { data: { customerRecover } } = await this.$graphql.request(ResetMutation, { email })
+
         const { customerUserErrors } = customerRecover
         if (customerUserErrors.length) {
-          const [firstError] = customerUserErrors
-          throw new Error(firstError.message)
+          const [{ message }] = customerUserErrors
+          throw new Error(message)
         }
 
         this.$notify({
@@ -92,8 +83,9 @@ export default {
         })
         this.$emit('change', 'login')
       } catch (error) {
-        this.isLoading = false
         console.error(error)
+        this.isLoading = false
+
         this.$notify({
           group: 'auth',
           title: error.message,

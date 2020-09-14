@@ -122,8 +122,8 @@
 </template>
 
 <script>
-// Packages
-import gql from 'graphql-tag'
+// GraphQL
+import { RegisterMutation } from '@/graphql/auth'
 
 export default {
   name: 'Register',
@@ -141,26 +141,14 @@ export default {
     async register () {
       const user = this.user
       this.isLoading = true
+
       try {
-        const { data: { customerCreate } } = await this.$apollo.mutate({
-          mutation: gql`mutation customerCreate($input: CustomerCreateInput!) {
-            customerCreate(input: $input) {
-              customer {
-                firstName
-              }
-              customerUserErrors {
-                code
-                field
-                message
-              }
-            }
-          }`,
-          variables: { input: user }
-        })
+        const { data: { customerCreate } } = await this.$graphql.request(RegisterMutation, { input: user })
+
         const { customer, customerUserErrors } = customerCreate
         if (customerUserErrors.length) {
-          const [firstError] = customerUserErrors
-          throw new Error(firstError.message)
+          const [{ message }] = customerUserErrors
+          throw new Error(message)
         }
 
         this.$notify({
@@ -171,8 +159,9 @@ export default {
         })
         this.$emit('change', 'login')
       } catch (error) {
-        this.isLoading = false
         console.error(error)
+        this.isLoading = false
+
         this.$notify({
           group: 'auth',
           title: error.message,

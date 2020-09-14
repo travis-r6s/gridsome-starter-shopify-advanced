@@ -29,8 +29,8 @@
 </template>
 
 <script>
-// Packages
-import gql from 'graphql-tag'
+// GraphQL
+import { CustomerDetailsQuery } from '@/graphql/customer'
 
 export default {
   props: {
@@ -42,13 +42,8 @@ export default {
   data: () => ({ email: '' }),
   async mounted () {
     if (this.$store.getters.isAuthenticated) {
-      const { data } = await this.$apollo.query({
-        query: gql`query CustomerDetails ($accessToken: String!) {
-          customer (customerAccessToken: $accessToken) {
-            id
-            email
-          }
-        }`,
+      const { data } = await this.$graphql.request({
+        query: CustomerDetailsQuery,
         variables: { accessToken: this.$store.getters.accessToken }
       })
       if (data && data.customer) {

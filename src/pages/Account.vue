@@ -7,7 +7,7 @@
             Your Account
           </h3>
           <div
-            v-if="!customer || $apollo.loading"
+            v-if="!customer"
             class="lds-ring">
             <div /><div /><div /><div />
           </div>
@@ -24,8 +24,9 @@
 </template>
 
 <script>
-// Packages
-import gql from 'graphql-tag'
+// GraphQL
+import { CustomerOrdersQuery } from '@/graphql/customer'
+
 // Components
 import AccountOrders from '@/components/Account/AccountOrders'
 import AccountDetails from '@/components/Account/AccountDetails'
@@ -33,57 +34,15 @@ import AccountDetails from '@/components/Account/AccountDetails'
 export default {
   name: 'Account',
   components: { AccountOrders, AccountDetails },
+  data: () => ({ customer: null }),
   computed: {
     orders () { return this.customer.orders.edges.map(({ node }) => node) }
   },
-  apollo: {
-    customer: {
-      query: gql`query customerOrders ($accessToken: String!) {
-        customer (customerAccessToken: $accessToken) {
-          displayName
-          firstName
-          lastName
-          email
-          defaultAddress {
-            address1
-            address2
-            city
-            country
-            zip
-            formatted(withName: true)
-          }
-          orders (first: 10) {
-            edges {
-              node {
-                id
-                name
-                statusUrl
-                lineItems (first: 100) {
-                  edges {
-                    node {
-                      title
-                      quantity
-                    }
-                  }
-                }
-                totalPrice: totalPriceV2 {
-                  amount
-                  currencyCode
-                }
-              }
-            }
-          }
-        }
-      }`,
-      skip () {
-        // Skip query if we have no token - i.e at build time
-        return !this.$store.getters.isAuthenticated
-      },
-      variables () {
-        const accessToken = this.$store.getters.accessToken
-        return { accessToken }
-      }
-    }
+  async mounted () {
+    const variables = { accessToken: this.$store.getters.accessToken }
+    const { data } = await this.$graphql.request(CustomerOrdersQuery, variables)
+
+    this.customer = data.customer
   }
 }
 </script>
