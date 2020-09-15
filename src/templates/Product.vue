@@ -99,7 +99,8 @@ export default {
         variantTitle: variant.title,
         variantId: variant.id,
         price: variant.price.amount,
-        image: variant.image
+        image: variant.image,
+        options: variant.selectedOptions
       }
       await this.$store.dispatch('addToCart', payload)
       this.$notify({

@@ -99,7 +99,7 @@ export default {
       this.$router.push('/')
     },
     cart () {
-      this.$router.push('/cart')
+      this.$store.commit('updateSidebar', true)
     }
   }
 }
