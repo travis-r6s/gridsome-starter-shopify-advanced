@@ -1,8 +1,9 @@
 <template>
-  <div class="column is-half">
-    <h4 class="subtitle is-family-secondary">
-      {{ displayName }}
-    </h4>
+  <div>
+    <SfHeading
+      :level="4"
+      class="sf-heading--left"
+      :title="displayName" />
     <p>{{ customer.email }}</p>
     <br>
     <div v-if="customer.defaultAddress">
@@ -16,7 +17,11 @@
 </template>
 
 <script>
+// Components
+import { SfHeading } from '@storefront-ui/vue'
+
 export default {
+  components: { SfHeading },
   props: {
     customer: {
       type: Object,

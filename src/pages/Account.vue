@@ -1,39 +1,36 @@
 <template>
   <Layout>
-    <div class="hero">
-      <div class="hero-body">
-        <div class="container has-text-centered">
-          <h3 class="title is-family-secondary">
-            Your Account
-          </h3>
-          <div
-            v-if="!customer"
-            class="lds-ring">
-            <div /><div /><div /><div />
-          </div>
+    <SfSection
+      title-heading="Your Account"
+      class="container">
+      <SfLoader :loading="!customer">
+        <div
+          v-if="customer"
+          class="account">
+          <AccountOrders
+            :orders="orders"
+            class="account-orders" />
+          <AccountDetails
+            :customer="customer"
+            class="account-customer" />
         </div>
-      </div>
-    </div>
-    <div
-      v-if="customer"
-      class="columns">
-      <account-orders :orders="orders" />
-      <account-details :customer="customer" />
-    </div>
+      </SfLoader>
+    </SfSection>
   </Layout>
 </template>
 
 <script>
-// GraphQL
-import { CustomerOrdersQuery } from '@/graphql/customer'
-
 // Components
+import { SfLoader, SfSection } from '@storefront-ui/vue'
 import AccountOrders from '@/components/Account/AccountOrders'
 import AccountDetails from '@/components/Account/AccountDetails'
 
+// GraphQL
+import { CustomerOrdersQuery } from '@/graphql/customer'
+
 export default {
   name: 'Account',
-  components: { AccountOrders, AccountDetails },
+  components: { SfLoader, SfSection, AccountOrders, AccountDetails },
   data: () => ({ customer: null }),
   computed: {
     orders () { return this.customer.orders.edges.map(({ node }) => node) }
@@ -46,3 +43,18 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.account {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  &-orders {
+    width: 60%;
+  }
+  &-customer {
+    width: 30%;
+  }
+}
+</style>

@@ -27,6 +27,8 @@ export const CustomerOrdersQuery = gql`query customerOrders ($accessToken: Strin
           id
           name
           statusUrl
+          processedAt
+          fulfillmentStatus
           lineItems (first: 10) {
             edges {
               node {
