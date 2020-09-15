@@ -47,6 +47,7 @@ export default {
           description: collection.description,
           title: collection.title,
           buttonText: 'Shop now',
+          path: collection.path,
           image: collection.image.large
         }
       })
