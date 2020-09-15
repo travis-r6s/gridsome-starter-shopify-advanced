@@ -12,11 +12,13 @@ export default function createStore (Vue, { isClient }) {
   const store = new Vuex.Store({
     state: {
       cart: [],
-      token: {}
+      token: {},
+      sidebarVisible: false
     },
     mutations: {
       updateCart: (state, cart) => { state.cart = cart },
-      setToken: (state, token) => { state.token = token }
+      setToken: (state, token) => { state.token = token },
+      updateSidebarVisible: (state, active) => { state.sidebarVisible = active }
     },
     actions: {
       addToCart: ({ state, commit }, newItem) => {
@@ -33,9 +35,9 @@ export default function createStore (Vue, { isClient }) {
 
         commit('updateCart', updatedCart)
       },
-      updateItemQty: ({ state, commit }, { itemId, qty }) => {
+      updateItemQty: ({ state, commit }, { variantId, qty }) => {
         const cart = state.cart
-        const item = cart.find(item => item.variantId === itemId)
+        const item = cart.find(item => item.variantId === variantId)
 
         item.qty = qty
         item.total = currency(item.price, { formatWithSymbol: true, symbol: '£' }).multiply(qty).format()
@@ -57,6 +59,8 @@ export default function createStore (Vue, { isClient }) {
       }
     },
     getters: {
+      cart: ({ cart }) => cart,
+      isSidebarVisible: ({ sidebarVisible }) => sidebarVisible,
       isAuthenticated: ({ token }) => !!token.accessToken,
       accessToken: ({ token }) => token.accessToken,
       cartTotal: ({ cart }) => cart.reduce((total, item) => total.add(currency(item.price).multiply(item.qty)), currency(0, { formatWithSymbol: true, symbol: '£' }))
