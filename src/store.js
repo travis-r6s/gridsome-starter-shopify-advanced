@@ -63,6 +63,7 @@ export default function createStore (Vue, { isClient }) {
       isSidebarVisible: ({ sidebarVisible }) => sidebarVisible,
       isAuthenticated: ({ token }) => !!token.accessToken,
       accessToken: ({ token }) => token.accessToken,
+      isAddedToCart: ({ cart }) => id => !!cart.find(({ variantId }) => variantId === id),
       cartTotal: ({ cart }) => cart.reduce((total, item) => total.add(currency(item.price).multiply(item.qty)), currency(0, { formatWithSymbol: true, symbol: '£' }))
     }
   })
