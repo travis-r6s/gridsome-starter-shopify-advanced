@@ -26,7 +26,8 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  padding: var(--spacer-lg) var(--spacer-2xl);
   max-width: 1240px;
+  padding: var(--spacer-lg) var(--spacer-2xl);
+  margin: auto;
 }
 </style>
