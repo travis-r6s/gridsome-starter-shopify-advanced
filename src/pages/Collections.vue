@@ -19,10 +19,10 @@
           <div class="card">
             <div class="card-image">
               <figure class="image is-4by3">
-                <v-lazy-image
+                <img
                   :src="collection.image.src"
                   :src-placeholder="collection.image.placeholder"
-                  :alt="collection.image.altText || collection.title" />
+                  :alt="collection.image.altText || collection.title">
               </figure>
             </div>
             <div class="card-content">

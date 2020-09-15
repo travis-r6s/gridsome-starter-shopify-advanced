@@ -14,10 +14,10 @@
           <div class="card">
             <div class="card-image">
               <figure class="image is-4by3">
-                <v-lazy-image
+                <img
                   :src="product.images[0].src"
                   :src-placeholder="product.images[0].placeholder"
-                  :alt="product.images[0].altText || product.title" />
+                  :alt="product.images[0].altText || product.title">
               </figure>
             </div>
             <div class="card-content has-text-left">
