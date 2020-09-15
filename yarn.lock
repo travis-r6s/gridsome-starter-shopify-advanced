@@ -5490,10 +5490,10 @@ gridsome-plugin-service-worker@^0.2.6:
     workbox-strategies "5.*"
     workbox-window "5.*"
 
-gridsome-source-shopify@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/gridsome-source-shopify/-/gridsome-source-shopify-0.2.2.tgz#ab0ba240691d232daa83311c0aa69070b3c6314e"
-  integrity sha512-oxANz//MZ8b2g8OFH6CEVP3PQeK0TvS7/A9twT0o5xWIR57Ef5/GOWzkR2lmQo3B/99jpB0Pc2PFkjFnRSefUQ==
+gridsome-source-shopify@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/gridsome-source-shopify/-/gridsome-source-shopify-0.2.3.tgz#e0de3d5d553340b572442c8d48b663ac6acbe811"
+  integrity sha512-dlhy0n/sp3/fKcvUfaAJ2BGE65cIWjFv3YAfR8T8mk3neRCV82zfjtKeo6q8Qsd8IaeW8sjJVcYDgoA1/FW7EA==
   dependencies:
     camelcase "^6.0.0"
     got "^11.6.2"
