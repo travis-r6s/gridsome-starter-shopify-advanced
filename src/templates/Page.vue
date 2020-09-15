@@ -1,19 +1,18 @@
 <template>
   <Layout>
-    <div class="container">
-      <SfHeading :title="page.title" />
-      <hr>
-      <br>
+    <SfSection
+      :title-heading="page.title"
+      class="container">
       <div
         class="content"
         v-html="page.body" />
-    </div>
+    </SfSection>
   </Layout>
 </template>
 
 <script>
 // Components
-import { SfHeading } from '@storefront-ui/vue'
+import { SfSection } from '@storefront-ui/vue'
 
 export default {
   name: 'Page',
@@ -22,7 +21,7 @@ export default {
       title: this.page.title
     }
   },
-  components: { SfHeading },
+  components: { SfSection },
   computed: {
     page () { return this.$page.shopifyPage }
   }
