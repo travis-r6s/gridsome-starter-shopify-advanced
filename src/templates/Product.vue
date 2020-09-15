@@ -26,6 +26,7 @@
           v-for="option in productOptions"
           :key="option.id"
           v-model="selectedOptions[option.name]"
+          :size="productOptions.length"
           :label="option.name">
           <SfComponentSelectOption
             v-for="(value, key) in option.values"
