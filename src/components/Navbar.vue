@@ -20,8 +20,10 @@
         v-for="(item, i) in navigation"
         :key="i">
         <template slot="desktop-navigation-item">
-          <g-link :to="item.path">
-            {{ item.label }}
+          <g-link
+            :to="item.path"
+            style="width: max-content;">
+            {{ item.title }}
           </g-link>
         </template>
       </SfHeaderNavigationItem>
@@ -62,16 +64,16 @@ import { SfHeader, SfSearchBar, SfMegaMenu, SfList, SfMenuItem } from '@storefro
 export default {
   components: { SfHeader, SfSearchBar, SfMegaMenu, SfList, SfMenuItem },
   data: () => ({
-    searchTerm: '',
-    navigation: [
-      { label: 'Home', path: '/' },
-      { label: 'Collections', path: '/collections' },
-      { label: 'About', path: '/about' },
-      { label: 'Contact', path: '/contact' }
-    ]
+    searchTerm: ''
   }),
   computed: {
     metadata () { return this.$static.metadata },
+    navigation () {
+      const pages = this.$static.allShopifyPage.edges.map(({ node }) => node)
+      const home = { title: 'Home', path: '/' }
+      const collections = { title: 'Collections', path: '/collections' }
+      return [home, collections, ...pages]
+    },
     isAuthenticated () { return this.$store.getters.isAuthenticated },
     cartItems () { return this.$store.state.cart.length.toString() },
     searchResults () {
@@ -111,6 +113,14 @@ query {
     siteName
     siteDescription
     siteUrl
+  }
+  allShopifyPage {
+    edges {
+      node {
+        title
+        path
+      }
+    }
   }
 }
 </static-query>
