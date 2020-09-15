@@ -38,7 +38,7 @@
     <template #content-bottom>
       <SfButton
         class="sf-button--full-width sf-button--outline"
-        :disabled="isLoading"
+        :disabled="!cart.length ||isLoading"
         @click="checkout">
         Checkout
       </SfButton>
