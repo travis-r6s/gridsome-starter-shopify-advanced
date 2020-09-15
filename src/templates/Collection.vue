@@ -34,7 +34,7 @@
           :regular-price="product.price"
           show-add-to-cart-button
           :is-added-to-cart="product.isAddedToCart"
-          @click:is-added-to-cart="addItemToCart(product)" />
+          @click:is-added-to-cart="addToCart(product)" />
       </div>
     </SfSection>
   </Layout>
