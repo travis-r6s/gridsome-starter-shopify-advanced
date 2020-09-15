@@ -1,11 +1,10 @@
 <template>
-  <div class="container-fluid">
+  <div>
     <notifications />
     <Navbar />
     <Sidebar />
-    <section class="section">
-      <slot />
-    </section>
+    <slot />
+    <Footer />
   </div>
 </template>
 
@@ -13,9 +12,10 @@
 // Components
 import Navbar from '@/components/Navbar'
 import Sidebar from '@/components/Sidebar'
+import Footer from '@/components/Footer'
 
 export default {
-  components: { Navbar, Sidebar }
+  components: { Navbar, Sidebar, Footer }
 }
 </script>
 
