@@ -28,8 +28,7 @@ export default function (Vue, { appOptions, isClient, router }) {
   if (isClient) {
     router.beforeEach((to, from, next) => {
       const tokenExists = store.getters.isAuthenticated
-      if (to.path.includes('/account') && !tokenExists) next('/login')
-      else if (to.path.includes('/login') && tokenExists) next('/')
+      if (to.path.includes('/account') && !tokenExists) next('/')
       else next()
     })
   }
