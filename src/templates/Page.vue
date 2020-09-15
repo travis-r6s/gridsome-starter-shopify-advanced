@@ -1,9 +1,7 @@
 <template>
   <Layout>
-    <div class="container has-text-centered">
-      <h1 class="title">
-        {{ page.title }}
-      </h1>
+    <div class="container">
+      <SfHeading :title="page.title" />
       <hr>
       <br>
       <div
@@ -14,6 +12,9 @@
 </template>
 
 <script>
+// Components
+import { SfHeading } from '@storefront-ui/vue'
+
 export default {
   name: 'Page',
   metaInfo () {
@@ -21,6 +22,7 @@ export default {
       title: this.page.title
     }
   },
+  components: { SfHeading },
   computed: {
     page () { return this.$page.shopifyPage }
   }
