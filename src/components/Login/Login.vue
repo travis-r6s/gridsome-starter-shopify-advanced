@@ -86,7 +86,7 @@ export default {
           throw new Error(message)
         }
 
-        await this.$store.dispatch('login', customerAccessToken)
+        await this.$store.dispatch('login', customerAccessToken.accessToken)
         this.$router.push('/account')
       } catch (error) {
         console.error(error)
