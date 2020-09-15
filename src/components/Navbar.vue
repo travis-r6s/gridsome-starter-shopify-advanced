@@ -94,7 +94,7 @@ export default {
   methods: {
     login () {
       if (this.isAuthenticated) return this.$router.push('/account')
-      return this.$router.push('/login')
+      return this.$emit('change', true)
     },
     logout () {
       this.$store.dispatch('logout')

@@ -1,62 +1,50 @@
 <template>
-  <div class="container has-text-centered">
-    <h3 class="title is-family-secondary">
-      Reset Password
-    </h3>
-    <div class="columns is-centered">
-      <div class="column is-4">
-        <form
-          class="form"
-          @submit.prevent="reset">
-          <div class="field">
-            <div class="control">
-              <label
-                class="label"
-                for="email">Email
-                <input
-                  id="email"
-                  v-model.trim="email"
-                  class="input"
-                  type="email"
-                  placeholder="Your Email"
-                  value="jane@does.com"
-                  required>
-              </label>
-            </div>
-          </div>
-          <div class="field is-grouped">
-            <div class="control">
-              <button
-                class="button is-white"
-                type="submit"
-                @click.prevent="$emit('change', 'login')"
-                @keyup.enter.space.prevent="$emit('change', 'login')">
-                Back to Login
-              </button>
-            </div>
-            <div
-              class="control"
-              style="margin-left: auto;">
-              <button
-                :class="{'is-loading': isLoading}"
-                class="button is-primary"
-                type="submit">
-                Reset Password
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+  <div>
+    <SfHeading
+      :level="3"
+      title="Reset Password" />
+    <br>
+    <form
+      class="form"
+      @submit.prevent="reset">
+      <SfInput
+        v-model="email"
+        type="email"
+        label="Email Address"
+        name="email"
+        required />
+      <br>
+      <SfButton
+        class="sf-button--full-width loading-button"
+        type="submit">
+        <SfLoader
+          class="loader"
+          :loading="isLoading">
+          <span>reset</span>
+        </SfLoader>
+      </SfButton>
+    </form>
+    <div class="modal-bottom">
+      <SfButton
+        class="sf-button--text"
+        @click="$emit('change', 'login')"
+        @keyup.enter.space="$emit('change', 'login')">
+        Back to login
+      </SfButton>
     </div>
   </div>
 </template>
 
 <script>
+// Components
+import { SfHeading, SfInput, SfButton, SfLoader } from '@storefront-ui/vue'
+
 // GraphQL
 import { ResetMutation } from '@/graphql/auth'
 
 export default {
   name: 'Reset',
+  components: { SfHeading, SfInput, SfButton, SfLoader },
   data: () => ({
     isLoading: false,
     email: ''
@@ -96,3 +84,22 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.loading-button {
+  height: 51px;
+
+  .loader {
+    --loader-spinner-stroke: var(--c-light);
+    --loader-overlay-background: var(--c-primary);
+  }
+}
+
+.modal-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  margin: var(--spacer-lg) 0;
+}
+</style>

@@ -1,86 +1,70 @@
 <template>
-  <div class="container has-text-centered">
-    <h3 class="title is-family-secondary">
-      Login
-    </h3>
-    <div class="columns is-centered">
-      <div class="column is-4">
-        <form
-          class="form"
-          @submit.prevent="login">
-          <div class="field">
-            <div class="control">
-              <label
-                class="label"
-                for="email">Email
-                <input
-                  id="email"
-                  v-model.trim="user.email"
-                  class="input"
-                  type="email"
-                  placeholder="Your Email"
-                  value="jane@does.com"
-                  required>
-              </label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label
-                class="label"
-                for="password">Password
-                <input
-                  id="password"
-                  v-model.trim="user.password"
-                  class="input"
-                  type="password"
-                  placeholder="***********"
-                  required>
-              </label>
-            </div>
-          </div>
-          <div class="field is-grouped">
-            <div class="control">
-              <button
-                class="button is-white"
-                type="submit"
-                @click.prevent="$emit('change', 'register')"
-                @keyup.enter.space.prevent="$emit('change', 'register')">
-                Register
-              </button>
-            </div>
-            <div
-              class="control"
-              style="margin-left: auto;">
-              <button
-                :class="{'is-loading': isLoading}"
-                class="button is-primary"
-                type="submit">
-                Login
-              </button>
-            </div>
-          </div>
-          <div class="buttons is-right">
-            <button
-              class="button is-text"
-              type="submit"
-              @click.prevent="$emit('change', 'reset')"
-              @keyup.enter.space.prevent="$emit('change', 'reset')">
-              Forgotten Password?
-            </button>
-          </div>
-        </form>
+  <div>
+    <SfHeading
+      :level="3"
+      title="Login" />
+    <br>
+    <form
+      class="form"
+      @submit.prevent="login">
+      <SfInput
+        v-model="user.email"
+        type="email"
+        label="Email Address"
+        name="email"
+        required />
+      <SfInput
+        v-model="user.password"
+        type="password"
+        label="Password"
+        name="password"
+        has-show-password
+        required />
+      <br>
+      <SfButton
+        class="sf-button--full-width loading-button"
+        type="submit">
+        <SfLoader
+          class="loader"
+          :loading="isLoading">
+          <span>Login</span>
+        </SfLoader>
+      </SfButton>
+    </form>
+    <div class="modal-bottom">
+      <SfButton
+        class="sf-button--text"
+        @click="$emit('change', 'reset')"
+        @keyup.enter.space="$emit('change', 'reset')">
+        Forgotten Password?
+      </SfButton>
+      <br>
+      <div class="modal-bottom--aside">
+        <SfHeading
+          title="Don't have an account yet?"
+          :level="4" />
+        <br>
+        <SfButton
+          class="sf-button--text"
+          @click="$emit('change', 'register')"
+          @keyup.enter.space="$emit('change', 'register')">
+          Register
+        </SfButton>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+// Components
+import { SfHeading, SfInput, SfButton, SfLoader } from '@storefront-ui/vue'
+
 // GraphQL
 import { LoginMutation } from '@/graphql/auth'
 
 export default {
   name: 'Login',
+  components: { SfHeading, SfInput, SfButton, SfLoader },
   data: () => ({
     isLoading: false,
     user: {
@@ -118,3 +102,26 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.loading-button {
+  height: 51px;
+
+  .loader {
+    --loader-spinner-stroke: var(--c-light);
+    --loader-overlay-background: var(--c-primary);
+  }
+}
+
+.modal-bottom {
+  margin: var(--spacer-lg) 0;
+  text-align: center;
+
+  &--aside {
+    --heading-title-color:var(--c-primary);
+
+    margin-top: var(--spacer-lg);
+    text-align: center;
+  }
+}
+</style>

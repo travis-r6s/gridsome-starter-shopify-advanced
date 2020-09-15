@@ -1,7 +1,10 @@
 <template>
   <div>
     <notifications />
-    <Navbar />
+    <Navbar @change="isAuthVisible = $event" />
+    <AuthModal
+      :visible="isAuthVisible"
+      @change="isAuthVisible = $event" />
     <Sidebar />
     <slot />
     <Footer />
@@ -11,11 +14,13 @@
 <script>
 // Components
 import Navbar from '@/components/Navbar'
+import AuthModal from '@/components/Login/Modal'
 import Sidebar from '@/components/Sidebar'
 import Footer from '@/components/Footer'
 
 export default {
-  components: { Navbar, Sidebar, Footer }
+  components: { Navbar, AuthModal, Sidebar, Footer },
+  data: () => ({ isAuthVisible: false })
 }
 </script>
 
