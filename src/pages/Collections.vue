@@ -1,8 +1,8 @@
 <template>
   <Layout>
-    <div class="container">
-      <SfHeading title="Collections" />
-      <br>
+    <SfSection
+      class="container"
+      title-heading="Collections">
       <SfBannerGrid
         v-for="(chunk, i) in collections"
         :key="i"
@@ -27,17 +27,17 @@
           </SfBanner>
         </template>
       </SfBannerGrid>
-    </div>
+    </SfSection>
   </Layout>
 </template>
 
 <script>
 // Components
-import { SfHeading, SfBannerGrid, SfBanner, SfButton } from '@storefront-ui/vue'
+import { SfSection, SfBannerGrid, SfBanner, SfButton } from '@storefront-ui/vue'
 
 export default {
   name: 'Collections',
-  components: { SfHeading, SfBannerGrid, SfBanner, SfButton },
+  components: { SfSection, SfBannerGrid, SfBanner, SfButton },
   computed: {
     collections () {
       const collections = this.$page.allShopifyCollection.edges.map(({ node: collection }, i) => {
