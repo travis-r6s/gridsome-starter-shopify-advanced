@@ -1,8 +1,6 @@
 // Plugins
-import Cookies from 'js-cookie'
 import currency from 'currency.js'
 import Vuex from 'vuex'
-import VuexPersistence from 'vuex-persist'
 
 export default function createStore (Vue, { isClient }) {
   // Use Vuex plugin
@@ -12,7 +10,7 @@ export default function createStore (Vue, { isClient }) {
   const store = new Vuex.Store({
     state: {
       cart: [],
-      token: {},
+      token: '',
       sidebarVisible: false
     },
     mutations: {
@@ -67,31 +65,6 @@ export default function createStore (Vue, { isClient }) {
       cartTotal: ({ cart }) => cart.reduce((total, item) => total.add(currency(item.price).multiply(item.qty)), currency(0, { formatWithSymbol: true, symbol: '£' }))
     }
   })
-
-  // Run vuex-persist if we are running on the client
-  if (isClient) {
-    // Tokens
-    new VuexPersistence({
-      restoreState: key => Cookies.getJSON(key),
-      saveState: (key, { token }) => {
-        if (token) {
-          const expires = new Date(token.expiresAt)
-          Cookies.set(key, { token }, { expires })
-        } else {
-          Cookies.set(key, { token })
-        }
-      },
-      modules: ['token'],
-      filter: mutation => mutation.type === 'setToken'
-    }).plugin(store)
-
-    // Cart
-    new VuexPersistence({
-      storage: window.localStorage,
-      modules: ['cart'],
-      filter: mutation => mutation.type === 'updateCart'
-    }).plugin(store)
-  }
 
   return store
 }
