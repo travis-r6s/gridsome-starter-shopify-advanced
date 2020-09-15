@@ -6,7 +6,7 @@
           v-for="product in heroProducts"
           :key="product.id"
           :title="product.title"
-          :subtitle="product.collections[0].title"
+          :subtitle="product.collections[0] && product.collections[0].title"
           :image="product.images[0]">
           <template #call-to-action>
             <SfButton
