@@ -22,20 +22,20 @@
           class="content"
           v-html="product.descriptionHtml" />
         <br>
-        <SfSelect
+        <SfComponentSelect
           v-for="option in productOptions"
           :key="option.id"
           v-model="selectedOptions[option.name]"
           :label="option.name">
-          <SfSelectOption
+          <SfComponentSelectOption
             v-for="(value, key) in option.values"
             :key="key"
             :value="value">
             <SfProductOption
               :color="value"
               :label="value" />
-          </SfSelectOption>
-        </SfSelect>
+          </SfComponentSelectOption>
+        </SfComponentSelect>
         <br>
         <SfAddToCart
           v-model="quantity"
@@ -48,7 +48,7 @@
 
 <script>
 // Components
-import { SfGallery, SfHeading, SfPrice, SfAddToCart, SfSelect, SfProductOption } from '@storefront-ui/vue'
+import { SfGallery, SfHeading, SfPrice, SfAddToCart, SfComponentSelect, SfProductOption } from '@storefront-ui/vue'
 
 export default {
   metaInfo () {
@@ -56,7 +56,7 @@ export default {
       title: this.$page.shopifyProduct.title
     }
   },
-  components: { SfGallery, SfHeading, SfPrice, SfAddToCart, SfSelect, SfProductOption },
+  components: { SfGallery, SfHeading, SfPrice, SfAddToCart, SfComponentSelect, SfProductOption },
   data: () => ({
     currentImage: 1,
     quantity: 1,
