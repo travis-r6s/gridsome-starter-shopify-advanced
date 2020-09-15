@@ -6,7 +6,8 @@
       <SfBannerGrid
         v-for="(chunk, i) in collections"
         :key="i"
-        :banner-grid="i + 1">
+        :banner-grid="(i % 2) + 1"
+        style="margin-bottom: var(--spacer-xl);">
         <template
           v-for="collection in chunk"
           v-slot:[collection.slot]>
@@ -40,20 +41,20 @@ export default {
   components: { SfSection, SfBannerGrid, SfBanner, SfButton },
   computed: {
     collections () {
-      const collections = this.$page.allShopifyCollection.edges.map(({ node: collection }, i) => {
+      const collections = this.$page.allShopifyCollection.edges.map(({ node: collection }, i) => ({
+        description: collection.description,
+        title: collection.title,
+        buttonText: 'Shop now',
+        path: collection.path,
+        image: collection.image.large
+      }))
+      return Array.from({ length: Math.ceil(collections.length / 4) }, (v, i) => collections.slice(i * 4, i * 4 + 4)).map(collections => collections.map((collection, i) => {
         const slot = i === 0 ? 'A' : i === 1 ? 'B' : i === 2 ? 'C' : 'D'
         return {
-          slot: `banner-${slot}`,
-          description: collection.description,
-          title: collection.title,
-          buttonText: 'Shop now',
-          path: collection.path,
-          image: collection.image.large
+          ...collection,
+          slot: `banner-${slot}`
         }
-      })
-      return Array.from({ length: Math.ceil(collections.length / 4) }, (v, i) =>
-        collections.slice(i * 4, i * 4 + 4)
-      )
+      }))
     }
   }
 }
