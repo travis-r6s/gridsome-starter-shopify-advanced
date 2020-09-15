@@ -90,7 +90,7 @@ export default {
     this.selectedOptions = firstVariant.selectedOptions.reduce((options, { name, value }) => ({ [ name ]: value, ...options }), {})
   },
   methods: {
-    async addToCart () {
+    addToCart () {
       const variant = this.currentVariant
       const payload = {
         path: this.product.path,
@@ -102,7 +102,7 @@ export default {
         image: variant.image,
         options: variant.selectedOptions
       }
-      await this.$store.dispatch('addToCart', payload)
+      this.$store.dispatch('addToCart', payload)
       this.$notify({
         title: `Added ${payload.productTitle} to Cart`,
         type: 'primary'
