@@ -61,7 +61,7 @@ export default {
 
 <page-query>
 query ShopifyProducts {
-  allShopifyCollection (limit: 100) {
+  allShopifyCollection {
     edges {
       node {
         id
