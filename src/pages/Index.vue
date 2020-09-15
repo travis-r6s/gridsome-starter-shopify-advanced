@@ -97,7 +97,6 @@ export default {
     featuredProducts () {
       return this.$page.featuredProducts.edges.map(({ node }) => {
         const [variant] = node.variants
-        console.log(this.$store.getters.isAddedToCart(variant.id))
         return {
           ...node,
           variant,
