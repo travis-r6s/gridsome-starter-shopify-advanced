@@ -49,7 +49,7 @@
       <SfSection
         title-heading="New in this month"
         :level-heading="3">
-        <div style="display: flex; flex-wrap: wrap;">
+        <div class="products-grid">
           <SfProductCard
             v-for="product in featuredProducts"
             :key="product.id"
@@ -131,6 +131,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+</style>
 
 <page-query>
 query ShopifyProducts {
