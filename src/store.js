@@ -18,7 +18,7 @@ export default function createStore (Vue, { isClient }) {
     mutations: {
       updateCart: (state, cart) => { state.cart = cart },
       setToken: (state, token) => { state.token = token },
-      updateSidebarVisible: (state, active) => { state.sidebarVisible = active }
+      updateSidebar: (state, active) => { state.sidebarVisible = active }
     },
     actions: {
       addToCart: ({ state, commit }, newItem) => {
