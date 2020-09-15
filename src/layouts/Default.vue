@@ -18,3 +18,9 @@ export default {
   components: { Navbar, Sidebar }
 }
 </script>
+
+<style lang="scss" scoped>
+.container {
+  padding: var(--spacer-lg) var(--spacer-2xl);
+}
+</style>
