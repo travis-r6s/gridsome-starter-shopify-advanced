@@ -1,121 +1,179 @@
 <template>
   <Layout>
-    <div
-      v-if="collection"
-      class="hero is-large">
-      <div class="container">
-        <div class="columns">
-          <div class="column is-two-fifths header">
-            <div class="header-content">
-              <h1 class="title is-size-1 is-family-secondary">
-                Our Core Collection
-              </h1>
-              <div
-                class="content"
-                v-html="collection.descriptionHtml" />
-              <g-link
-                :to="collection.path"
-                class="button">
-                Shop Now
-              </g-link>
-            </div>
-          </div>
-          <div class="column is-three-fifths">
-            <figure class="image">
-              <v-lazy-image
-                :src="collection.image.src"
-                :src-placeholder="collection.image.placeholder"
-                :alt="collection.image.altText || collection.title" />
-            </figure>
-          </div>
-        </div>
-      </div>
-    </div>
-    <br>
-    <br>
-    <div class="container has-text-centered">
-      <hr>
-      <h3 class="title is-size-4 is-family-secondary">
-        Featured Products
-      </h3>
-      <hr>
-      <br>
-      <div class="columns is-multiline">
-        <div
-          v-for="({ node: product }) in featuredProducts"
+    <div class="container">
+      <SfHero>
+        <SfHeroItem
+          v-for="product in heroProducts"
           :key="product.id"
-          class="column is-4">
-          <div class="card">
-            <div class="card-image">
-              <figure class="image is-4by3">
-                <v-lazy-image
-                  :src="product.images[0].src"
-                  :src-placeholder="product.images[0].placeholder"
-                  :alt="product.images[0].altText || product.title" />
-              </figure>
-            </div>
-            <div class="card-content has-text-left">
-              <div class="media">
-                <div class="media-content">
-                  <p class="title is-4 is-family-secondary">
-                    {{ product.title }}
-                  </p>
-                  <p class="subtitle is-6">
-                    {{ product.priceRange.minVariantPrice.amount }}
-                  </p>
-                </div>
-              </div>
-
-              <div
-                class="content"
-                v-html="product.descriptionHtml" />
-              <div class="field is-grouped is-grouped-right">
-                <div class="control">
-                  <g-link
-                    :to="product.path"
-                    class="button is-primary is-outlined">
-                    View Product
-                  </g-link>
-                </div>
-              </div>
-            </div>
-          </div>
+          :title="product.title"
+          :subtitle="product.collections[0] && product.collections[0].title"
+          :image="product.images[0]">
+          <template #call-to-action>
+            <SfButton
+              :link="product.path"
+              class="bg-black">
+              View Product
+            </SfButton>
+          </template>
+        </SfHeroItem>
+      </SfHero>
+      <br>
+      <SfBannerGrid :banner-grid="2">
+        <template
+          v-for="collection in collections"
+          v-slot:[collection.slot]>
+          <SfBanner
+            :key="collection.slot"
+            :title="collection.title"
+            :subtitle="collection.subtitle"
+            :description="collection.description"
+            :image="collection.image"
+            :class="collection.class">
+            <template #call-to-action>
+              <SfButton
+                :link="collection.path"
+                class="bg-black">
+                Shop Now
+              </SfButton>
+            </template>
+          </SfBanner>
+        </template>
+      </SfBannerGrid>
+      <br>
+      <SfCallToAction
+        title="Subscribe to Newsletters"
+        description="Be aware of upcoming sales and events. Receive gifts and special offers!"
+        button-text="Subscribe"
+        background="black" />
+      <br>
+      <SfSection
+        title-heading="New in this month"
+        :level-heading="3">
+        <div class="products-grid">
+          <SfProductCard
+            v-for="product in featuredProducts"
+            :key="product.id"
+            :image="product.image"
+            :image-width="200"
+            :image-height="300"
+            :title="product.title"
+            :link="product.path"
+            link-tag="g-link"
+            :regular-price="product.price"
+            show-add-to-cart-button
+            :is-added-to-cart="product.isAddedToCart"
+            @click:is-added-to-cart="addItemToCart(product)" />
         </div>
-      </div>
+      </SfSection>
     </div>
   </Layout>
 </template>
 
 <script>
+// Components
+import { SfBannerGrid, SfBanner, SfHero, SfButton, SfCallToAction, SfSection, SfProductCard } from '@storefront-ui/vue'
+
 export default {
   metaInfo: {
     title: 'Come, shop!'
   },
+  components: { SfBannerGrid, SfBanner, SfHero, SfButton, SfCallToAction, SfSection, SfProductCard },
   computed: {
-    collection () { return this.$page.allShopifyCollection.edges.length && this.$page.allShopifyCollection.edges[ 0 ].node },
-    featuredProducts () { return this.$page.allShopifyProduct.edges }
+    collections () {
+      const collections = this.$page.allShopifyCollection.edges.map(({ node }) => node)
+      return collections.map((collection, i) => {
+        const slot = i === 0 ? 'A' : i === 1 ? 'B' : i === 2 ? 'C' : 'D'
+        return {
+          slot: `banner-${slot}`,
+          description: collection.description,
+          title: collection.title,
+          buttonText: 'Shop now',
+          path: collection.path,
+          image: collection.image.large
+        }
+      })
+    },
+    heroProducts () { return this.$page.heroProducts.edges.map(({ node }) => node) },
+    featuredProducts () {
+      return this.$page.featuredProducts.edges.map(({ node }) => {
+        const [variant] = node.variants
+        return {
+          ...node,
+          variant,
+          isAddedToCart: this.$store.getters.isAddedToCart(variant.id),
+          price: node.priceRange.minVariantPrice.amount,
+          image: {
+            mobile: { url: node.images[ 0 ].mobile },
+            desktop: { url: node.images[ 0 ].desktop }
+          }
+        }
+      })
+    }
+  },
+  methods: {
+    addToCart ({ variant, ...product }) {
+      const payload = {
+        path: product.path,
+        qty: 1,
+        productTitle: product.title,
+        variantTitle: variant.title,
+        variantId: variant.id,
+        price: variant.price.amount,
+        image: variant.image,
+        options: variant.selectedOptions
+      }
+      this.$store.dispatch('addToCart', payload)
+      this.$notify({
+        title: `Added ${payload.productTitle} to Cart`,
+        type: 'primary'
+      })
+    }
   }
 }
 </script>
 
+<style lang="scss" scoped>
+.products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+</style>
+
 <page-query>
 query ShopifyProducts {
-  allShopifyCollection (limit: 1) {
+  allShopifyCollection (limit: 5) {
     edges {
       node {
         id
         path
         title
-        descriptionHtml
+        description
         image {
-          altText
-          src: transformedSrc(maxWidth: 800, maxHeight: 800, crop: CENTER)
-          placeholder: transformedSrc(maxWidth: 200, maxHeight: 200, crop: CENTER)
+          large: transformedSrc(maxWidth: 500, maxHeight: 700, crop: CENTER)
+          small: transformedSrc(maxWidth: 300, maxHeight: 300, crop: CENTER)
         }
       }
     }
   }
-  allShopifyProduct (limit: 6) {
+  heroProducts: allShopifyProduct (limit: 2) {
+    edges {
+      node {
+        id
+        title
+        path
+        description
+        collections {
+          title
+        }
+        images (limit: 1) {
+          desktop: transformedSrc (maxWidth: 1400, maxHeight: 600, crop: CENTER)
+          mobile: transformedSrc (maxWidth: 500, maxHeight: 400)
+        }
+      }
+    }
+  }
+  featuredProducts: allShopifyProduct (limit: 8) {
     edges {
       node {
         id
@@ -130,21 +188,27 @@ query ShopifyProducts {
         images (limit: 1) {
           id
           altText
-          src: transformedSrc (maxWidth: 400, maxHeight: 300, crop: CENTER)
-          placeholder: transformedSrc(maxWidth: 100, maxHeight: 75, crop: CENTER)
+          desktop: transformedSrc (maxWidth: 200, maxHeight: 300, crop: CENTER)
+          mobile: transformedSrc(maxWidth: 100, maxHeight: 150, crop: CENTER)
+        }
+        variants {
+          id
+          title
+          price {
+            amount(format: true)
+          }
+          selectedOptions {
+            name
+            value
+          }
+          image {
+            id
+            altText
+            thumbnail: transformedSrc(maxWidth: 150, maxHeight: 150, crop: CENTER)
+          }
         }
       }
     }
   }
 }
 </page-query>
-
-<style lang="scss" scoped>
-.header {
-  align-items: center;
-  display: flex;
-  .header-content {
-    text-align: center;
-  }
-}
-</style>

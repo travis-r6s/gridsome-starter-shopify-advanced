@@ -1,7 +1,7 @@
 module.exports = {
-  siteName: 'Gridsome + Shopify 😍',
-  siteDescription: 'A full-featured Shopify starter kit for Gridsome, including an account page.',
-  siteUrl: 'https://gridsome-starter-shopify-account.vercel.app',
+  siteName: 'Gridsome, Storefront UI, + Shopify',
+  siteDescription: 'A full-featured Gridsome ecommerce site, built with Storefront UI and Shopify.',
+  siteUrl: 'https://gridsome-starter-shopify-advanced.vercel.app',
   templates: {
     ShopifyProduct: [
       {
@@ -27,7 +27,8 @@ module.exports = {
       use: 'gridsome-source-shopify',
       options: {
         storeName: process.env.GRIDSOME_SHOPIFY_STOREFRONT,
-        storefrontToken: process.env.GRIDSOME_SHOPIFY_STOREFRONT_TOKEN
+        storefrontToken: process.env.GRIDSOME_SHOPIFY_STOREFRONT_TOKEN,
+        perPage: 100
       }
     },
     {
@@ -51,7 +52,6 @@ module.exports = {
         searchFields: ['title', 'handle', 'tags']
       }
     },
-    'gridsome-plugin-purgecss',
     {
       use: '@gridsome/plugin-critical',
       options: {

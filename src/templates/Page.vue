@@ -1,19 +1,19 @@
 <template>
   <Layout>
-    <div class="container has-text-centered">
-      <h1 class="title">
-        {{ page.title }}
-      </h1>
-      <hr>
-      <br>
+    <SfSection
+      :title-heading="page.title"
+      class="container">
       <div
         class="content"
         v-html="page.body" />
-    </div>
+    </SfSection>
   </Layout>
 </template>
 
 <script>
+// Components
+import { SfSection } from '@storefront-ui/vue'
+
 export default {
   name: 'Page',
   metaInfo () {
@@ -21,6 +21,7 @@ export default {
       title: this.page.title
     }
   },
+  components: { SfSection },
   computed: {
     page () { return this.$page.shopifyPage }
   }

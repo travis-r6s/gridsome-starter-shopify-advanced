@@ -1,5 +1,5 @@
 {
-  "name": "gridsome-starter-shopify-account",
+  "name": "gridsome-starter-shopify-advanced",
   "private": true,
   "scripts": {
     "build": "gridsome build",
@@ -7,33 +7,25 @@
     "explore": "gridsome explore"
   },
   "dependencies": {
-    "@gridsome/plugin-critical": "^0.1.6",
+    "@gridsome/plugin-critical": "^0.2.0",
     "@gridsome/plugin-google-analytics": "^0.1.1",
     "@gridsome/plugin-sitemap": "^0.4.0",
-    "apollo-boost": "^0.4.9",
-    "bulma": "^0.9.0",
-    "currency.js": "^1.2.2",
-    "graphql-tag": "^2.10.3",
-    "gridsome": "^0.7.18",
-    "gridsome-plugin-flexsearch": "^1.0.1",
-    "gridsome-plugin-guess-js": "^0.1.1",
+    "@storefront-ui/vue": "^0.8.1",
+    "cookie": "^0.4.1",
+    "currency.js": "^2.0.3",
+    "graphql-request": "^3.1.0",
+    "gridsome": "^0.7.20",
+    "gridsome-plugin-flexsearch": "^1.0.4",
     "gridsome-plugin-manifest": "^0.3.5",
-    "gridsome-plugin-purgecss": "^1.0.12",
-    "gridsome-plugin-service-worker": "^0.1.5",
-    "gridsome-source-shopify": "^0.1.13",
-    "isomorphic-fetch": "^2.2.1",
-    "js-cookie": "^2.2.1",
-    "typeface-karla": "^0.0.72",
-    "typeface-prata": "^0.0.72",
-    "v-lazy-image": "^1.4.0",
-    "vue-apollo": "^3.0.3",
+    "gridsome-plugin-service-worker": "^0.2.6",
+    "gridsome-source-shopify": "0.2.3",
+    "vue-apollo": "^3.0.4",
     "vue-notification": "^1.3.20",
-    "vuex": "^3.5.1",
-    "vuex-persist": "^2.2.0"
+    "vuex": "^3.5.1"
   },
   "devDependencies": {
-    "eslint-config-travisreynolds-vue": "1.1.8",
+    "eslint-config-travisreynolds-vue": "1.2.0",
     "node-sass": "^4.14.1",
-    "sass-loader": "^9.0.2"
+    "sass-loader": "^10.0.2"
   }
 }

@@ -1,54 +1,69 @@
 <template>
-  <div class="column is-half">
-    <h4 class="subtitle is-family-secondary">
-      Order history
-    </h4>
-    <div>
-      <p v-if="!orders.length">
-        You have no orders.
-      </p>
-      <table
-        v-else
-        class="table is-fullwidth">
-        <thead>
-          <tr>
-            <th>Order #</th>
-            <th>Total Items</th>
-            <th>Total Price</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="order in orders"
-            :key="order.id">
-            <th>{{ order.name }}</th>
-            <th>{{ order.lineItems.edges.length }}</th>
-            <th>{{ formatCurrency(order.totalPrice) }}</th>
-            <th>
-              <a
-                :href="order.statusUrl"
-                target="_blank"
-                rel="noreferrer">
-                View Order
-              </a>
-            </th>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div>
+    <SfHeading
+      :level="3"
+      title="Order history" />
+    <br>
+    <p v-if="!orders.length">
+      You have no orders.
+    </p>
+    <SfTable>
+      <SfTableHeading>
+        <SfTableHeader
+          v-for="header in tableHeaders"
+          :key="header">
+          {{ header }}
+        </SfTableHeader>
+      </SfTableHeading>
+      <SfTableRow
+        v-for="order in orders"
+        :key="order.id">
+        <SfTableData>
+          {{ order.name }}
+        </SfTableData>
+        <SfTableData>
+          {{ formatDate(order.processedAt) }}
+        </SfTableData>
+        <SfTableData>
+          {{ order.lineItems.edges.length }}
+        </SfTableData>
+        <SfTableData>
+          {{ formatCurrency(order.totalPrice) }}
+        </SfTableData>
+        <SfTableData>
+          <span>{{ order.fulfillmentStatus }}</span>
+          <br>
+          <a
+            :href="order.statusUrl"
+            target="_blank"
+            rel="noreferrer">
+            View Order
+          </a>
+        </SfTableData>
+      </SfTableRow>
+    </SfTable>
   </div>
 </template>
 
 <script>
+// Components
+import { SfHeading, SfTable } from '@storefront-ui/vue'
+
 export default {
+  components: { SfHeading, SfTable },
   props: {
     orders: {
       type: Array,
       default: () => []
     }
   },
+  data: () => ({
+    tableHeaders: ['Order #', 'Order Date', 'Total Items', 'Amount', 'Status']
+  }),
   methods: {
+    formatDate (date) {
+      return new Intl.DateTimeFormat().format(new Date(date))
+    },
     formatCurrency ({ currencyCode, amount }) {
       return new Intl.NumberFormat('en-GB', { style: 'currency', currency: currencyCode }).format(amount)
     }

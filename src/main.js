@@ -6,18 +6,11 @@ import DefaultLayout from '~/layouts/Default.vue'
 
 // Plugins
 import Notifications from 'vue-notification/dist/ssr.js'
-import { VLazyImagePlugin } from 'v-lazy-image'
-import VueApollo from 'vue-apollo'
+import GraphQL from './graphql'
 import createStore from './store'
 
-// Dependencies
-import ApolloClient from 'apollo-boost'
-import fetch from 'isomorphic-fetch'
-
 // Styles
-import '~/styles/main.scss'
-import 'typeface-karla'
-import 'typeface-prata'
+import '@storefront-ui/vue/styles.scss'
 
 export default function (Vue, { appOptions, isClient, router }) {
   // Set default layout as a global component
@@ -25,25 +18,7 @@ export default function (Vue, { appOptions, isClient, router }) {
 
   // Import global plugins
   Vue.use(Notifications)
-  Vue.use(VLazyImagePlugin)
-  Vue.use(VueApollo)
-
-  // Create Apollo client
-  const apolloClient = new ApolloClient({
-    fetch,
-    uri: `https://${process.env.GRIDSOME_SHOPIFY_STOREFRONT}.myshopify.com/api/2020-04/graphql.json`,
-    headers: {
-      'X-Shopify-Storefront-Access-Token': process.env.GRIDSOME_SHOPIFY_STOREFRONT_TOKEN
-    }
-  })
-
-  // Add client to vue-apollo provider
-  const apolloProvider = new VueApollo({
-    defaultClient: apolloClient
-  })
-
-  // Add provider to vue app
-  appOptions.apolloProvider = apolloProvider
+  Vue.use(GraphQL)
 
   // Add Vuex store
   const store = createStore(Vue, { isClient })
@@ -53,8 +28,7 @@ export default function (Vue, { appOptions, isClient, router }) {
   if (isClient) {
     router.beforeEach((to, from, next) => {
       const tokenExists = store.getters.isAuthenticated
-      if (to.path.includes('/account') && !tokenExists) next('/login')
-      else if (to.path.includes('/login') && tokenExists) next('/')
+      if (to.path.includes('/account') && !tokenExists) next('/')
       else next()
     })
   }

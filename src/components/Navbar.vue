@@ -1,9 +1,10 @@
 <template>
-  <nav
-    class="navbar container is-spaced"
-    role="navigation"
-    aria-label="main navigation">
-    <div class="navbar-brand">
+  <SfHeader
+    :title="metadata.siteName"
+    :cart-items-qty="cartItems"
+    @click:cart="cart"
+    @click:account="login">
+    <template #logo>
       <g-link
         to="/"
         class="navbar-item">
@@ -13,124 +14,76 @@
           height="28"
           alt="Gridsome Logo" />
       </g-link>
-
-      <button
-        class="navbar-burger burger"
-        :aria-label="isMenuActive ? 'Close nav menu' : 'Open nav menu'"
-        :class="{'is-active': isMenuActive}"
-        @click="isMenuActive = !isMenuActive"
-        @keyup="isMenuActive = !isMenuActive">
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-      </button>
-    </div>
-
-    <div
-      class="navbar-menu"
-      :class="{'is-active': isMenuActive}">
-      <div class="navbar-start">
-        <g-link
-          to="/"
-          class="navbar-item">
-          Home
-        </g-link>
-        <g-link
-          to="/collections"
-          class="navbar-item">
-          Collections
-        </g-link>
-        <g-link
-          to="/contact-us"
-          class="navbar-item">
-          Contact
-        </g-link>
-        <g-link
-          to="/about-us"
-          class="navbar-item">
-          About
-        </g-link>
+    </template>
+    <template #navigation>
+      <SfHeaderNavigationItem
+        v-for="(item, i) in navigation"
+        :key="i">
+        <template slot="desktop-navigation-item">
+          <g-link
+            :to="item.path"
+            style="width: max-content;">
+            {{ item.title }}
+          </g-link>
+        </template>
+      </SfHeaderNavigationItem>
+    </template>
+    <template #search>
+      <div>
+        <SfSearchBar
+          v-model="searchTerm"
+          placeholder="Search for items" />
+        <SfMegaMenu
+          :visible="!!searchTerm.length && !!searchResults.length"
+          title="Search Results"
+          style="z-index: 10;"
+          is-absolute>
+          <SfMegaMenuColumn
+            v-for="(chunk, i) in searchResults"
+            :key="i">
+            <SfList>
+              <SfListItem
+                v-for="({ id, node, path }) in chunk"
+                :key="id">
+                <SfMenuItem
+                  :label="node.title"
+                  :link="path" />
+              </SfListItem>
+            </SfList>
+          </SfMegaMenuColumn>
+        </SfMegaMenu>
       </div>
-
-      <div class="navbar-end">
-        <div
-          class="navbar-item has-dropdown"
-          :class="{'is-active': searchResults.length}">
-          <div class="control navbar-item">
-            <label for="search">
-              <input
-                id="search"
-                v-model="searchTerm"
-                aria-label="Search"
-                class="input is-small"
-                type="text"
-                placeholder="Search">
-            </label>
-          </div>
-          <div class="navbar-dropdown">
-            <g-link
-              v-for="({ node: result, path }) in searchResults"
-              :key="result.id"
-              :to="path"
-              class="navbar-item">
-              {{ result.title }}
-            </g-link>
-            <hr class="navbar-divider">
-            <div class="navbar-item">
-              View more results
-            </div>
-          </div>
-        </div>
-        <div
-          v-if="isAuthenticated"
-          class="navbar-item has-dropdown is-hoverable">
-          <p class="navbar-item">
-            Account
-          </p>
-          <div class="navbar-dropdown has-text-centered">
-            <g-link
-              to="/account"
-              class="navbar-item">
-              Your Orders
-            </g-link>
-            <hr class="navbar-divider">
-            <button
-              class="button is-white"
-              @click="logout"
-              @keyup.enter="logout">
-              Logout
-            </button>
-          </div>
-        </div>
-        <g-link
-          v-if="!isAuthenticated"
-          to="/login"
-          class="navbar-item">
-          Login
-        </g-link>
-        <g-link
-          to="/cart"
-          class="navbar-item">
-          Cart - {{ cart.length }} Item{{ cart.length !== 1 ? 's' : '' }}
-        </g-link>
-      </div>
-    </div>
-  </nav>
+    </template>
+  </SfHeader>
 </template>
 
 <script>
+// Components
+import { SfHeader, SfSearchBar, SfMegaMenu, SfList, SfMenuItem } from '@storefront-ui/vue'
+
 export default {
+  components: { SfHeader, SfSearchBar, SfMegaMenu, SfList, SfMenuItem },
   data: () => ({
-    isMenuActive: false,
     searchTerm: ''
   }),
   computed: {
+    metadata () { return this.$static.metadata },
+    navigation () {
+      const pages = this.$static.allShopifyPage.edges.map(({ node }) => node)
+      const home = { title: 'Home', path: '/' }
+      const collections = { title: 'Collections', path: '/collections' }
+      return [home, collections, ...pages]
+    },
     isAuthenticated () { return this.$store.getters.isAuthenticated },
-    cart () { return this.$store.state.cart },
+    cartItems () { return this.$store.state.cart.length.toString() },
     searchResults () {
       const searchTerm = this.searchTerm
-      if (searchTerm.length < 3) return []
-      return this.$search.search({ query: searchTerm, limit: 5, suggest: true })
+      if (searchTerm.length < 1) return []
+
+      const results = this.$search.search({ query: searchTerm, limit: 15, suggest: true })
+      return Array.from({ length: Math.ceil(results.length / 5) }, (v, i) =>
+        results.slice(i * 5, i * 5 + 5)
+      )
     }
   },
   watch: {
@@ -139,17 +92,35 @@ export default {
     }
   },
   methods: {
-    async logout () {
-      await this.$store.dispatch('logout')
+    login () {
+      if (this.isAuthenticated) return this.$router.push('/account')
+      return this.$emit('change', true)
+    },
+    logout () {
+      this.$store.dispatch('logout')
       this.$router.push('/')
+    },
+    cart () {
+      this.$store.commit('updateSidebar', true)
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.navbar-burger {
-  background-color: transparent;
-  border: none;
+<static-query>
+query {
+  metadata {
+    siteName
+    siteDescription
+    siteUrl
+  }
+  allShopifyPage {
+    edges {
+      node {
+        title
+        path
+      }
+    }
+  }
 }
-</style>
+</static-query>

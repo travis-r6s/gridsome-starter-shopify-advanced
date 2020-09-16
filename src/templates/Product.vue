@@ -1,109 +1,77 @@
 <template>
   <Layout>
-    <div class="container">
-      <div class="columns">
-        <div class="column is-three-fifths">
-          <figure class="image">
-            <v-lazy-image
-              :src="product.images[0].src"
-              :src-placeholder="product.images[0].placeholder"
-              :alt="product.images[0].altText || product.title" />
-          </figure>
-          <br>
-          <div class="columns">
-            <div
-              v-for="({ node: image }) in product.images.edges"
-              :key="image.id"
-              class="column is-3">
-              <figure class="image is-square">
-                <v-lazy-image
-                  :src="image.thumbnail"
-                  :alt="image.altText || product.title" />
-              </figure>
-            </div>
-          </div>
-        </div>
-        <div class="column is-two-fifths">
-          <h3 class="title is-family-secondary">
-            {{ product.title }}
-          </h3>
-          <h5
-            v-if="currentVariant"
-            class="subtitle">
-            {{ currentVariant.price.amount }}
-          </h5>
-          <div
-            class="content"
-            v-html="product.descriptionHtml" />
-          <div
-            v-for="option in productOptions"
-            :key="option.id"
-            class="field">
-            <div class="control">
-              <label
-                :for="option.name"
-                class="label">
-                {{ option.name }}
-                <div class="select is-fullwidth">
-                  <select
-                    :id="option.name"
-                    v-model="selectedOptions[option.name]">
-                    <option
-                      v-for="value in option.values"
-                      :key="value"
-                      :value="value">
-                      {{ value }}
-                    </option>
-                  </select>
-                </div>
-              </label>
-            </div>
-          </div>
-          <br>
-          <div class="field is-grouped is-grouped-right">
-            <div class="field has-addons is-fullwidth">
-              <div class="control">
-                <label
-                  class="label"
-                  for="quantity">
-                  Quantity
-                </label>
-                <input
-                  id="quantity"
-                  v-model.number="quantity"
-                  class="input quantity"
-                  type="number"
-                  placeholder="Find a repository">
-              </div>
-              <div class="add-to-cart">
-                <button
-                  class="button is-primary"
-                  @click="addToCart"
-                  @keyup.enter="addToCart">
-                  Add To Cart
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="container product">
+      <div class="product-gallery">
+        <SfGallery
+          :images="productImages"
+          :image-width="500"
+          :image-height="500"
+          :current="currentImage" />
+      </div>
+      <div class="product-information">
+        <SfHeading
+          :level="3"
+          :title="product.title"
+          class="sf-heading--left" />
+        <br>
+        <SfPrice
+          v-if="currentVariant"
+          :regular="currentVariant.price.amount" />
+        <br>
+        <div
+          class="content"
+          v-html="product.descriptionHtml" />
+        <br>
+        <SfComponentSelect
+          v-for="option in productOptions"
+          :key="option.id"
+          v-model="selectedOptions[option.name]"
+          :size="productOptions.length"
+          :label="option.name">
+          <SfComponentSelectOption
+            v-for="(value, key) in option.values"
+            :key="key"
+            :value="value">
+            <SfProductOption
+              :color="value"
+              :label="value" />
+          </SfComponentSelectOption>
+        </SfComponentSelect>
+        <br>
+        <SfAddToCart
+          v-model="quantity"
+          :disabled="!currentVariant"
+          @click="addToCart" />
       </div>
     </div>
   </Layout>
 </template>
 
 <script>
+// Components
+import { SfGallery, SfHeading, SfPrice, SfAddToCart, SfComponentSelect, SfProductOption } from '@storefront-ui/vue'
+
 export default {
   metaInfo () {
     return {
       title: this.$page.shopifyProduct.title
     }
   },
+  components: { SfGallery, SfHeading, SfPrice, SfAddToCart, SfComponentSelect, SfProductOption },
   data: () => ({
-    selectedOptions: {},
-    quantity: 1
+    currentImage: 1,
+    quantity: 1,
+    selectedOptions: {}
   }),
   computed: {
     product () { return this.$page.shopifyProduct },
+    productImages () {
+      return this.product.images.map(image => ({
+        ...image,
+        mobile: { url: image.mobile },
+        desktop: { url: image.desktop }
+      }))
+    },
     productOptions () { return this.product.options.filter(({ name }) => name !== 'Title') },
     currentVariant () {
       const matchedVariant = this.product.variants.find(variant =>
@@ -123,7 +91,7 @@ export default {
     this.selectedOptions = firstVariant.selectedOptions.reduce((options, { name, value }) => ({ [ name ]: value, ...options }), {})
   },
   methods: {
-    async addToCart () {
+    addToCart () {
       const variant = this.currentVariant
       const payload = {
         path: this.product.path,
@@ -132,9 +100,10 @@ export default {
         variantTitle: variant.title,
         variantId: variant.id,
         price: variant.price.amount,
-        image: variant.image
+        image: variant.image,
+        options: variant.selectedOptions
       }
-      await this.$store.dispatch('addToCart', payload)
+      this.$store.dispatch('addToCart', payload)
       this.$notify({
         title: `Added ${payload.productTitle} to Cart`,
         type: 'primary'
@@ -144,6 +113,21 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+.product {
+  display: flex;
+
+  &-gallery {
+    width: 50%;
+    padding: var(--spacer-lg);
+  }
+  &-information {
+    width: 50%;
+    padding: var(--spacer-xl) var(--spacer-lg);
+  }
+}
+</style>
+
 <page-query>
 query Product ($id: ID!) {
   shopifyProduct (id: $id) {
@@ -152,12 +136,11 @@ query Product ($id: ID!) {
     descriptionHtml
     title
     tags
-    images(limit: 4) {
+    images(limit: 5) {
       id
-      altText
-      src: transformedSrc(maxWidth: 600, maxHeight: 400, crop: CENTER)
-      placeholder: transformedSrc(maxWidth: 150, maxHeight: 100, crop: CENTER)
-      thumbnail: transformedSrc(maxWidth: 150, maxHeight: 150, crop: CENTER)
+      alt: altText
+      desktop: transformedSrc(maxWidth: 500, maxHeight: 500, crop: CENTER)
+      mobile: transformedSrc(maxWidth: 250, maxHeight: 250, crop: CENTER)
     }
     options {
       id
@@ -183,20 +166,3 @@ query Product ($id: ID!) {
   }
 }
 </page-query>
-
-<style lang="scss" scoped>
-.is-fullwidth {
-  width: 100%;
-  .control {
-    width: 100%;
-  }
-}
-.quantity {
-  width: 100%;
-  height: 50px;
-}
-.add-to-cart {
-  display: flex;
-  align-items: flex-end;
-}
-</style>

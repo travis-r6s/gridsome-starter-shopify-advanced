@@ -1,132 +1,80 @@
 <template>
-  <div class="container has-text-centered">
-    <h3 class="title is-family-secondary">
-      Register
-    </h3>
-    <div class="columns is-centered">
-      <div class="column is-4">
-        <form
-          class="form"
-          @submit.prevent="register">
-          <div class="field is-horizontal">
-            <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <label
-                    class="label"
-                    for="first-name">First Name
-                    <input
-                      id="first-name"
-                      v-model.trim="user.firstName"
-                      class="input"
-                      type="text"
-                      placeholder="First Name"
-                      value="Jane"
-                      required>
-                  </label>
-                </div>
-              </div>
-              <div class="field">
-                <div class="control">
-                  <label
-                    class="label"
-                    for="last-name">Last Name
-                    <input
-                      id="last-name"
-                      v-model.trim="user.lastName"
-                      class="input"
-                      type="text"
-                      placeholder="Last Name"
-                      value="Doe"
-                      required>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label
-                class="label"
-                for="email">Email
-                <input
-                  id="email"
-                  v-model.trim="user.email"
-                  class="input"
-                  type="email"
-                  placeholder="Your Email"
-                  value="jane@does.com"
-                  required>
-              </label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label
-                class="label"
-                for="password">Password
-                <input
-                  id="password"
-                  v-model.trim="user.password"
-                  class="input"
-                  type="password"
-                  placeholder="***********"
-                  required>
-              </label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <label class="checkbox">
-                <input
-                  v-model="user.acceptsMarketing"
-                  type="checkbox">
-                Please please please let us email you...?
-              </label>
-            </div>
-          </div>
-          <div class="field is-grouped">
-            <div class="control">
-              <button
-                class="button is-white"
-                type="submit"
-                @click.prevent="$emit('change', 'login')"
-                @keyup.prevent="$emit('change', 'login')">
-                Login
-              </button>
-            </div>
-            <div
-              class="control"
-              style="margin-left: auto;">
-              <button
-                :class="{'is-loading': isLoading}"
-                class="button is-primary"
-                type="submit">
-                Register
-              </button>
-            </div>
-          </div>
-          <div class="buttons is-right">
-            <button
-              class="button is-text"
-              type="submit"
-              @click.prevent="$emit('change', 'reset')"
-              @keyup.prevent="$emit('change', 'reset')">
-              Forgotten Password?
-            </button>
-          </div>
-        </form>
-      </div>
+  <div>
+    <SfHeading
+      :level="3"
+      title="Register" />
+    <br>
+    <form
+      class="form"
+      @submit.prevent="register">
+      <SfInput
+        v-model="user.firstName"
+        type="text"
+        label="First Name"
+        name="first-name"
+        required />
+      <SfInput
+        v-model="user.lastName"
+        type="text"
+        label="Last Name"
+        name="last-name"
+        required />
+      <SfInput
+        v-model="user.email"
+        type="email"
+        label="Email Address"
+        name="email"
+        required />
+      <SfInput
+        v-model="user.password"
+        type="password"
+        label="Password"
+        name="password"
+        has-show-password
+        required />
+      <br>
+      <SfCheckbox
+        v-model="user.acceptsMarketing"
+        name="accpets-marketing"
+        label="Do you want us to keep you updated with offers?" />
+      <br>
+      <SfButton
+        class="sf-button--full-width loading-button"
+        type="submit">
+        <SfLoader
+          class="loader"
+          :loading="isLoading">
+          <span>Register</span>
+        </SfLoader>
+      </SfButton>
+    </form>
+    <div class="modal-bottom">
+      <SfButton
+        class="sf-button--text"
+        @click="$emit('change', 'reset')"
+        @keyup.enter.space="$emit('change', 'reset')">
+        Forgotten Password?
+      </SfButton>
+      <br>
+      <SfButton
+        @click="$emit('change', 'register')"
+        @keyup.enter.space="$emit('change', 'register')">
+        Login
+      </SfButton>
     </div>
   </div>
 </template>
 
 <script>
-// Packages
-import gql from 'graphql-tag'
+// Components
+import { SfHeading, SfInput, SfButton, SfLoader, SfCheckbox } from '@storefront-ui/vue'
+
+// GraphQL
+import { RegisterMutation } from '@/graphql/auth'
 
 export default {
   name: 'Register',
+  components: { SfHeading, SfInput, SfButton, SfLoader, SfCheckbox },
   data: () => ({
     isLoading: false,
     user: {
@@ -141,26 +89,14 @@ export default {
     async register () {
       const user = this.user
       this.isLoading = true
+
       try {
-        const { data: { customerCreate } } = await this.$apollo.mutate({
-          mutation: gql`mutation customerCreate($input: CustomerCreateInput!) {
-            customerCreate(input: $input) {
-              customer {
-                firstName
-              }
-              customerUserErrors {
-                code
-                field
-                message
-              }
-            }
-          }`,
-          variables: { input: user }
-        })
+        const { customerCreate } = await this.$graphql.request(RegisterMutation, { input: user })
+
         const { customer, customerUserErrors } = customerCreate
         if (customerUserErrors.length) {
-          const [firstError] = customerUserErrors
-          throw new Error(firstError.message)
+          const [{ message }] = customerUserErrors
+          throw new Error(message)
         }
 
         this.$notify({
@@ -171,8 +107,9 @@ export default {
         })
         this.$emit('change', 'login')
       } catch (error) {
-        this.isLoading = false
         console.error(error)
+        this.isLoading = false
+
         this.$notify({
           group: 'auth',
           title: error.message,
@@ -183,3 +120,22 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.loading-button {
+  height: 51px;
+
+  .loader {
+    --loader-spinner-stroke: var(--c-light);
+    --loader-overlay-background: var(--c-primary);
+  }
+}
+
+.modal-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  margin: var(--spacer-lg) 0;
+}
+</style>

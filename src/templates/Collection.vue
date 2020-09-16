@@ -1,64 +1,144 @@
 <template>
   <Layout>
-    <div class="container has-text-centered">
-      <h1 class="title is-family-secondary">
-        {{ collection.title }}
-      </h1>
-      <hr>
-      <br>
-      <div class="columns is-multiline">
-        <div
-          v-for="product in collection.products"
-          :key="product.id"
-          class="column is-4">
-          <div class="card">
-            <div class="card-image">
-              <figure class="image is-4by3">
-                <v-lazy-image
-                  :src="product.images[0].src"
-                  :src-placeholder="product.images[0].placeholder"
-                  :alt="product.images[0].altText || product.title" />
-              </figure>
-            </div>
-            <div class="card-content has-text-left">
-              <div class="media">
-                <div class="media-content">
-                  <p class="title is-4 is-family-secondary">
-                    {{ product.title }}
-                  </p>
-                  <p class="subtitle is-6">
-                    {{ product.priceRange.minVariantPrice.amount }}
-                  </p>
-                </div>
-              </div>
-
-              <div
-                class="content"
-                v-html="product.descriptionHtml" />
-              <div class="field is-grouped is-grouped-right">
-                <div class="control">
-                  <g-link
-                    :to="product.path"
-                    class="button is-primary is-outlined">
-                    View Product
-                  </g-link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <SfSection
+      class="container"
+      :title-heading="collection.title">
+      <div class="nav">
+        <SfComponentSelect
+          v-model="currentSortOption"
+          :size="sortOptions.length"
+          label="Sort by:"
+          placeholder="Choose a sort option...">
+          <SfComponentSelectOption
+            v-for="(option, i) in sortOptions"
+            :key="i"
+            :value="option">
+            {{ option.name }}
+          </SfComponentSelectOption>
+        </SfComponentSelect>
+        <SfHeading
+          :title="`Products found ${products.length}`"
+          :level="4" />
       </div>
-    </div>
+      <SfDivider />
+      <div class="products-grid">
+        <SfProductCard
+          v-for="product in products"
+          :key="product.id"
+          :image="product.image"
+          :image-width="200"
+          :image-height="300"
+          :title="product.title"
+          :link="product.path"
+          link-tag="g-link"
+          :regular-price="product.price"
+          show-add-to-cart-button
+          :is-added-to-cart="product.isAddedToCart"
+          @click:is-added-to-cart="addToCart(product)" />
+      </div>
+    </SfSection>
   </Layout>
 </template>
 
 <script>
+// Components
+import { SfSection, SfDivider, SfProductCard, SfHeading, SfComponentSelect } from '@storefront-ui/vue'
+
+// Sorting Functions
+const sortHighLow = products => products.sort((a, b) => b.priceRange.minVariantPrice.price - a.priceRange.minVariantPrice.price)
+const sortLowHigh = products => products.sort((a, b) => a.priceRange.minVariantPrice.price - b.priceRange.minVariantPrice.price)
+
 export default {
+  name: 'Collection',
+  metaInfo () {
+    return {
+      title: this.collection.title
+    }
+  },
+  components: { SfSection, SfDivider, SfProductCard, SfHeading, SfComponentSelect },
+  data: () => ({
+    currentSortOption: {
+      name: 'Latest Products',
+      sort: products => products
+    },
+    sortOptions: [
+      {
+        name: 'Latest Products',
+        sort: products => products
+      },
+      {
+        name: 'Price: High to low',
+        sort: sortHighLow
+      },
+      {
+        name: 'Price: Low to high',
+        sort: sortLowHigh
+      }
+    ]
+  }),
   computed: {
-    collection () { return this.$page.shopifyCollection }
+    collection () { return this.$page.shopifyCollection },
+    products () {
+      const products = this.collection.products.map(product => {
+        const [variant] = product.variants
+        return {
+          ...product,
+          variant,
+          isAddedToCart: this.$store.getters.isAddedToCart(variant.id),
+          price: product.priceRange.minVariantPrice.amount,
+          image: {
+            mobile: { url: product.images[ 0 ].mobile },
+            desktop: { url: product.images[ 0 ].desktop }
+          }
+        }
+      })
+      const sortOption = this.currentSortOption
+      return sortOption.sort(products)
+    }
+  },
+  methods: {
+    addToCart ({ variant, ...product }) {
+      const payload = {
+        path: product.path,
+        qty: 1,
+        productTitle: product.title,
+        variantTitle: variant.title,
+        variantId: variant.id,
+        price: variant.price.amount,
+        image: variant.image,
+        options: variant.selectedOptions
+      }
+      this.$store.dispatch('addToCart', payload)
+      this.$notify({
+        title: `Added ${payload.productTitle} to Cart`,
+        type: 'primary'
+      })
+    }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  &-filters {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+</style>
 
 <page-query>
 query Collection ($id: ID!) {
@@ -73,14 +153,31 @@ query Collection ($id: ID!) {
       descriptionHtml
       priceRange {
         minVariantPrice {
-          amount(format: true, currency: "GBP")
+          price: amount
+          amount(format: true)
         }
       }
       images (limit: 1) {
         id
         altText
-        src: transformedSrc (maxWidth: 400, maxHeight: 300, crop: CENTER)
-        placeholder: transformedSrc(maxWidth: 100, maxHeight: 75, crop: CENTER)
+        desktop: transformedSrc (maxWidth: 200, maxHeight: 300, crop: CENTER)
+        mobile: transformedSrc(maxWidth: 100, maxHeight: 150, crop: CENTER)
+      }
+      variants {
+        id
+        title
+        price {
+          amount(format: true)
+        }
+        selectedOptions {
+          name
+          value
+        }
+        image {
+          id
+          altText
+          thumbnail: transformedSrc(maxWidth: 150, maxHeight: 150, crop: CENTER)
+        }
       }
     }
   }

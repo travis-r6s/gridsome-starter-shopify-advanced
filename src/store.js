@@ -1,8 +1,7 @@
 // Plugins
-import Cookies from 'js-cookie'
+import cookie from 'cookie'
 import currency from 'currency.js'
 import Vuex from 'vuex'
-import VuexPersistence from 'vuex-persist'
 
 export default function createStore (Vue, { isClient }) {
   // Use Vuex plugin
@@ -12,11 +11,13 @@ export default function createStore (Vue, { isClient }) {
   const store = new Vuex.Store({
     state: {
       cart: [],
-      token: {}
+      token: '',
+      sidebarVisible: false
     },
     mutations: {
       updateCart: (state, cart) => { state.cart = cart },
-      setToken: (state, token) => { state.token = token }
+      setToken: (state, token) => { state.token = token },
+      updateSidebar: (state, active) => { state.sidebarVisible = active }
     },
     actions: {
       addToCart: ({ state, commit }, newItem) => {
@@ -33,9 +34,9 @@ export default function createStore (Vue, { isClient }) {
 
         commit('updateCart', updatedCart)
       },
-      updateItemQty: ({ state, commit }, { itemId, qty }) => {
+      updateItemQty: ({ state, commit }, { variantId, qty }) => {
         const cart = state.cart
-        const item = cart.find(item => item.variantId === itemId)
+        const item = cart.find(item => item.variantId === variantId)
 
         item.qty = qty
         item.total = currency(item.price, { formatWithSymbol: true, symbol: '£' }).multiply(qty).format()
@@ -57,35 +58,25 @@ export default function createStore (Vue, { isClient }) {
       }
     },
     getters: {
-      isAuthenticated: ({ token }) => !!token.accessToken,
-      accessToken: ({ token }) => token.accessToken,
+      cart: ({ cart }) => cart,
+      isSidebarVisible: ({ sidebarVisible }) => sidebarVisible,
+      isAuthenticated: ({ token }) => !!token,
+      accessToken: ({ token }) => token,
+      isAddedToCart: ({ cart }) => id => !!cart.find(({ variantId }) => variantId === id),
       cartTotal: ({ cart }) => cart.reduce((total, item) => total.add(currency(item.price).multiply(item.qty)), currency(0, { formatWithSymbol: true, symbol: '£' }))
     }
   })
 
-  // Run vuex-persist if we are running on the client
-  if (isClient) {
-    // Tokens
-    new VuexPersistence({
-      restoreState: key => Cookies.getJSON(key),
-      saveState: (key, { token }) => {
-        if (token) {
-          const expires = new Date(token.expiresAt)
-          Cookies.set(key, { token }, { expires })
-        } else {
-          Cookies.set(key, { token })
-        }
-      },
-      modules: ['token'],
-      filter: mutation => mutation.type === 'setToken'
-    }).plugin(store)
+  store.subscribe((mutation, state) => {
+    if (mutation.type === 'setToken') {
+      const authCookie = cookie.serialize('shopifyToken', state.token, { maxAge: 432000 })
+      document.cookie = authCookie
+    }
+  })
 
-    // Cart
-    new VuexPersistence({
-      storage: window.localStorage,
-      modules: ['cart'],
-      filter: mutation => mutation.type === 'updateCart'
-    }).plugin(store)
+  if (isClient) {
+    const { shopifyToken } = cookie.parse(document.cookie)
+    if (shopifyToken) store.dispatch('login', shopifyToken)
   }
 
   return store
