@@ -1,6 +1,6 @@
 # Extended Shopify starter for Gridsome
 
-This is an extended starter, copied from the [boilerplate starter](https://github.com/thetre97/gridsome-starter-shopify), which includes customer login and account pages as well as a persisted shopping cart. [View Demo](https://gridsome-starter-shopify-account.vercel.app)
+This is an extended starter, copied from the [boilerplate starter](https://github.com/travis-r6s/gridsome-starter-shopify), which includes customer login and account pages as well as a persisted shopping cart. [View Demo](https://gridsome-starter-shopify-account.vercel.app)
 
 > Give it a go, create an account - take this as written confirmation of the fact that I will _not_ harvest any personal data. Or, of course, you can just use a dummy email and password 🤷🏻‍♂️.
 
@@ -29,12 +29,12 @@ You can either directly download this repository, or use Gridsome's CLI to downl
 
 ```bash
 # Clone repository
-git clone https://github.com/thetre97/gridsome-starter-shopify-account.git
+git clone https://github.com/travis-r6s/gridsome-starter-shopify-account.git
 npm install # or
 yarn install
 
 # Download with CLI
-gridsome create my-gridsome-site thetre97/gridsome-starter-shopify-account
+gridsome create my-gridsome-site travis-r6s/gridsome-starter-shopify-account
 ```
 
 ## Developing
